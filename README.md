@@ -13,7 +13,7 @@ Prototype: [home.html](home.html)
 - A white gradient at the bottom of each column shows there is more to scroll.
 
 **Banner and navigation**
-- The IPS logo is in the bottom-left of the banner, labelled "A project by".
+- As requested the IPS logo is in the bottom-left of the banner, labelled "A project by".
 - The logo and text in the banner and navigation bar now share the same side margins as the columns below, so everything lines up.
 - The banner is a series of archival photos that fade slowly into each other every 5 seconds, instead of a single image. This gives the site a stronger visual identity and shows more of the archive.
 - The language switch is now a dropdown (English, Arabic). The current language has a checkmark, and Arabic is written in Arabic script so Arabic speakers can find it.
@@ -38,12 +38,12 @@ Prototype: [home.html](home.html)
 **Mobile**
 - The three columns become tabs (Sections, Featured, Today), so each list is one tap away instead of a long scroll.
 - The tab bar stays pinned under the navigation bar, and switching tabs jumps back to the top of the column.
-- The navigation bar uses the compact logo: English on the English site, Arabic on the Arabic site. The logo files can be provided again if needed.
+- The navigation bar uses the compact logo that was developed in the identity design phase: English on the English site, Arabic on the Arabic site. The logo files can be provided again if needed.
 
 **Performance**
-- All photos are resized for the web and load only when needed. The Japan poster went from 18 MB to about 180 KB; the page's images total about 1.2 MB.
+- Try to reduce the size of images if possible to reduce the loading time. 
 
-**Accessibility**
+**Accessibility notes (general)**
 - Everything works with the keyboard: Escape closes the panel and menus, and focus returns to where you were.
 - Every image has a text description, and the banner logo is the page's main heading.
 - Animations are reduced, and the banner photos stop changing, for visitors who turn motion down in their system settings.

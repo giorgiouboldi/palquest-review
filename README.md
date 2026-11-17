@@ -11,17 +11,19 @@ Prototype: [home.html](home.html)
 - Once the columns reach the top, the navigation bar appears and each column scrolls on its own.
 - Column titles stay pinned while scrolling, with the labels "Editors' selection" and "17 November".
 - A white gradient at the bottom of each column shows there is more to scroll.
-- On mobile, the three columns become tabs.
 
 **Banner and navigation**
 - The IPS logo is in the bottom-left of the banner, labelled "A project by".
 - The logo and text in the banner and navigation bar now share the same side margins as the columns below, so everything lines up.
 - The banner is a series of archival photos that fade slowly into each other every 5 seconds, instead of a single image. This gives the site a stronger visual identity and shows more of the archive.
-- The language switch is now a dropdown (English, Arabic).
-- On mobile, the navigation bar uses the compact logo: English on the English site, Arabic on the Arabic site. The logo files can be provided again if needed.
+- The language switch is now a dropdown (English, Arabic). The current language has a checkmark, and Arabic is written in Arabic script so Arabic speakers can find it.
 
 **Sections**
 - Search is now listed with the sections, after Documents, and opens a search box in place. Search is one of the main ways into the encyclopedia, so it should be on the home page.
+
+**Featured**
+- All featured images use the same 3:2 crop, so the column looks even instead of mixing tall and wide images.
+- The "Highlight" and "Biography" labels use the site's font (Suisse). On the live site they show in Times because a font file is missing.
 
 **Event panel**
 - The panel closes when you click anywhere outside it, as well as with Close or the Escape key.
@@ -33,6 +35,15 @@ Prototype: [home.html](home.html)
 - Hovering a featured item shows "Read highlight →" or "Read biography →".
 - Images in Featured and It happened today zoom in slightly on hover.
 
-## Developer notes
+**Mobile**
+- The three columns become tabs (Sections, Featured, Today), so each list is one tap away instead of a long scroll.
+- The tab bar stays pinned under the navigation bar, and switching tabs jumps back to the top of the column.
+- The navigation bar uses the compact logo: English on the English site, Arabic on the Arabic site. The logo files can be provided again if needed.
 
-Bugs, URL handling, chronology and filter issues, fonts, accessibility and Drupal housekeeping, with suggested fixes: [docs/developer-notes.md](docs/developer-notes.md)
+**Performance**
+- All photos are resized for the web and load only when needed. The Japan poster went from 18 MB to about 180 KB; the page's images total about 1.2 MB.
+
+**Accessibility**
+- Everything works with the keyboard: Escape closes the panel and menus, and focus returns to where you were.
+- Every image has a text description, and the banner logo is the page's main heading.
+- Animations are reduced, and the banner photos stop changing, for visitors who turn motion down in their system settings.

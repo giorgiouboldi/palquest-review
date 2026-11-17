@@ -1,0 +1,9 @@
+# Working files (previews, originals, notes)
+_work/
+docs/
+
+# Licensed fonts: not for publication
+assets/fonts/
+
+# macOS
+.DS_Store

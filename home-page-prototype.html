@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Palquest Home</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+@font-face { font-family: "Lyon Text"; src: url("assets/fonts/LyonArabicText-Regular-Web.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Suisse Intl"; src: url("assets/fonts/SuisseIntl-Book.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Layout: the live site's hero + three equal columns. Hero stays fixed; the column panel slides over it, docks under the header, then each column scrolls on its own with a sticky title. */
+:root {
+  --paper: #ffffff;
+  --paper-2: #f2f5f2;
+  --ink: #0f2a20;
+  --muted: #6b7a73;
+  --rule: #dfe5e1;
+  --accent: #2f8664;
+  --accent-soft: #e6f2ec;
+  --tag: #b8235a;
+  --hero-bg: #1d4436;
+  --hero-ink: #f2f5f1;
+  --hero-ar: #7fd0ac;
+  --shadow: 0 -16px 36px rgba(6, 25, 18, .25);
+
+  --f-display: "Lyon Text", Georgia, "Times New Roman", serif;
+  --f-text: "Suisse Intl", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-ar: "Lyon Text", "Geeza Pro", "Times New Roman", serif;
+
+  --hdr: 60px;
+  --hero-h: 74svh;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --container: 1320px;   /* width of the column grid */
+  --inset: 12px;         /* text inset inside each column */
+  --edge-l: calc(max(var(--gutter), (100% - var(--container)) / 2) + var(--inset));
+  --edge-r: calc(max(var(--gutter-r), (100% - var(--container)) / 2) + var(--inset));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1714; --paper-2: #17221d; --ink: #e3ebe6; --muted: #93a39b; --rule: #26332d;
+    --accent: #6cc3a0; --accent-soft: #1a3329; --tag: #ec6d9b; --shadow: 0 -16px 36px rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1714; --paper-2: #17221d; --ink: #e3ebe6; --muted: #93a39b; --rule: #26332d;
+  --accent: #6cc3a0; --accent-soft: #1a3329; --tag: #ec6d9b; --shadow: 0 -16px 36px rgba(0,0,0,.55);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { font-synthesis: none; background: var(--hero-bg); color: var(--ink); font-family: var(--f-text); font-size: 15px; line-height: 1.5; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--hero-bg); }
+body.is-docked::before { background: var(--paper); }
+
+/* ---------- Header ---------- */
+.hdr {
+  position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; height: var(--hdr); z-index: 30;
+  display: flex; align-items: center; gap: 12px;
+  padding-left: var(--edge-l); padding-right: var(--edge-r);
+  color: var(--hero-ink); transition: background .3s, color .3s, box-shadow .3s;
+}
+body.is-docked .hdr { background: var(--paper); color: var(--ink); box-shadow: 0 1px 0 var(--rule); }
+.hdr__logo {
+  display: block; line-height: 0; text-decoration: none; min-width: 0;
+  opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity .3s, transform .3s var(--ease);
+}
+.hdr__logo img { height: 44px; width: auto; display: block; }
+.hdr__logo .logo--dark-ui { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hdr__logo .logo--light-ui { display: none; } :root:not([data-theme="light"]) .hdr__logo .logo--dark-ui { display: block; } }
+:root[data-theme="dark"] .hdr__logo .logo--light-ui { display: none; }
+:root[data-theme="dark"] .hdr__logo .logo--dark-ui { display: block; }
+body.is-docked .hdr__logo { opacity: 1; transform: none; pointer-events: auto; }
+.hdr__spacer { flex: 1; }
+.hdr__btn {
+  background: none; border: 0; color: inherit; font: inherit; font-size: 15px; font-weight: 600;
+  height: 38px; padding: 0 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border-radius: 19px;
+  white-space: nowrap; transition: background .15s;
+}
+.hdr__btn:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+.hdr__btn svg { width: 22px; height: 22px; }
+.hdr__btn:last-child { margin-inline-end: -10px; }
+
+/* Language dropdown */
+.lang { position: relative; }
+.lang__caret { width: 12px !important; height: 12px !important; transition: transform .2s var(--ease); }
+.lang__btn[aria-expanded="true"] { background: color-mix(in srgb, currentColor 12%, transparent); }
+.lang__btn[aria-expanded="true"] .lang__caret { transform: rotate(180deg); }
+.lang__menu {
+  position: absolute; top: calc(100% + 6px); inset-inline-end: 0; min-width: 168px; margin: 0; padding: 6px; list-style: none;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(6, 25, 18, .18);
+  opacity: 0; transform: translateY(-4px); pointer-events: none; visibility: hidden;
+  transition: opacity .15s, transform .2s var(--ease), visibility 0s .2s;
+}
+.lang__menu.is-open { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity .15s, transform .2s var(--ease), visibility 0s; }
+.lang__menu a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 9px 10px; border-radius: 5px; text-decoration: none; font-size: 15px; line-height: 1.2;
+}
+.lang__menu a:hover, .lang__menu a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+.lang__menu a[aria-current="true"] { color: var(--accent); }
+.lang__menu a span[lang="ar"] { font-family: var(--f-ar); font-size: 16px; }
+.lang__check { width: 16px; height: 16px; flex: none; visibility: hidden; }
+.lang__menu a[aria-current="true"] .lang__check { visibility: visible; }
+
+/* ---------- Hero (fixed, as on the live site) ---------- */
+.hero { position: fixed; inset: 0 0 auto; height: 100svh; z-index: 0; color: var(--hero-ink); background: var(--hero-bg); overflow: hidden; }
+.hero { background: var(--hero-bg) url("assets/web/hero.jpg") center 30% / cover no-repeat; }
+@media (max-width: 960px) { .hero { background-image: url("assets/web/hero-1200.jpg"); } }
+.hero::after { content: ""; position: absolute; inset: 0; background: #000; opacity: var(--dim, 0); pointer-events: none; }
+.hero__inner {
+  position: relative; z-index: 1; height: var(--hero-h);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 1fr auto; column-gap: 32px; row-gap: 24px;
+  padding-left: var(--edge-l); padding-right: var(--edge-r); padding-block: 22px 40px;
+  transform: translateY(calc(var(--lift, 0) * -40px)); opacity: calc(1 - var(--lift, 0) * .6);
+}
+.hero__title { margin: 0; grid-column: 1; grid-row: 1; align-self: start; }
+.hero__by { grid-column: 1; grid-row: 2; align-self: end; display: flex; flex-direction: column; gap: 8px; width: max-content; text-decoration: none; color: var(--hero-ink); }
+.hero__by span { font-size: 13px; letter-spacing: .02em; opacity: .8; }
+.hero__by img { display: block; width: 260px; height: auto; transition: opacity .2s; }
+.hero__by:hover img { opacity: .85; }
+.hero__title img { display: block; width: min(640px, 100%); height: auto; }
+.hero__lede { grid-column: 2; grid-row: 1 / span 2; align-self: end; justify-self: end; margin: 0; max-width: 30em; font-size: clamp(17px, 1.45vw, 21px); line-height: 1.35; font-weight: 500; }
+.hero__lede a { font-size: .82em; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; text-underline-offset: 3px; white-space: nowrap; transition: color .15s; }
+.hero__lede a:hover { color: var(--hero-ar); }
+
+/* ---------- Panel ---------- */
+.panel {
+  position: relative; z-index: 10; margin-top: var(--hero-h);
+  height: calc(100dvh - var(--hdr) - env(safe-area-inset-top, 0px));
+  background: var(--paper); box-shadow: var(--shadow);
+  padding-left: var(--gutter); padding-right: var(--gutter-r);
+}
+.panel__grid { height: 100%; max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.col { min-height: 0; overflow: hidden; padding-inline: 8px; position: relative; }
+.col + .col { border-inline-start: 1px solid var(--rule); }
+.col:first-child { padding-inline-start: 0; padding-inline-end: 8px; }
+.col:last-child { padding-inline-end: 0; padding-inline-start: 8px; }
+body.is-docked .col { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
+.col__title {
+  position: sticky; top: 0; z-index: 3; margin: 0; background: var(--paper);
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  padding: 18px 12px 12px; border-bottom: 1px solid var(--rule);
+  font-size: 16px; font-weight: 500;
+  transition: box-shadow .2s;
+}
+.col__title small { font-size: 13px; color: var(--muted); font-weight: 400; }
+.col.is-scrolled .col__title { box-shadow: 0 8px 12px -10px rgba(0,0,0,.25); }
+.col__fade { position: sticky; bottom: 0; height: 64px; margin-top: -64px; pointer-events: none; background: linear-gradient(to bottom, transparent, var(--paper)); transition: opacity .2s; }
+.col.is-end .col__fade { opacity: 0; }
+
+/* Sections: big serif links with short descriptions */
+.sec {
+  display: block;
+  width: 100%; text-align: start; background: none; border: 0; color: inherit; font: inherit; cursor: pointer;
+  padding: 20px 12px; border-bottom: 1px solid var(--rule); text-decoration: none; position: relative;
+  transition: background .2s var(--ease);
+}
+.sec h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(28px, 2.5vw, 36px); line-height: 1.1; transition: color .2s; }
+.sec:hover h3, .sec:focus-visible h3, .sec[aria-expanded="true"] h3 { color: var(--accent); }
+.sec:hover h3::after, .sec:focus-visible h3::after, .sec[aria-expanded="true"] h3::after { opacity: 1; transform: none; }
+.sec[aria-expanded="true"] { background: var(--accent-soft); }
+
+.search-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s var(--ease); background: var(--accent-soft); }
+.search-panel.is-open { grid-template-rows: 1fr; border-bottom: 1px solid var(--rule); }
+.search-panel > div { overflow: hidden; }
+.search-panel form { display: flex; gap: 8px; padding: 4px 12px 12px; }
+.search-panel input { flex: 1; min-width: 0; height: 44px; border: 1px solid var(--rule); border-radius: 22px; background: var(--paper); color: var(--ink); font: inherit; font-size: 16px; padding: 0 16px; transition: border-color .15s, box-shadow .15s; }
+.search-panel input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.search-panel button { height: 44px; border: 0; border-radius: 22px; padding: 0 18px; background: var(--ink); color: var(--paper); font: inherit; font-weight: 600; cursor: pointer; transition: transform .1s; }
+.search-try { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 16px; font-size: 13px; color: var(--muted); align-items: center; }
+.search-try button { height: auto; padding: 3px 10px; border-radius: 999px; background: var(--paper); color: var(--ink); border: 1px solid var(--rule); font-weight: 500; font-size: 13px; }
+.search-try button:hover { border-color: var(--accent); color: var(--accent); }
+.search-msg { margin: 0; padding: 0 12px 14px; font-size: 13px; color: var(--accent); min-height: 0; }
+
+/* Featured: stacked cards with full-width images */
+.feat { display: block; text-decoration: none; padding: 10px 12px 18px; border-bottom: 1px solid var(--rule); position: relative; transition: background .2s; }
+.feat figure { margin: 0 0 12px; }
+.ph { position: relative; aspect-ratio: 3 / 2; max-width: 100%; overflow: hidden; background: var(--paper-2); border-radius: 2px; }
+.ph__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s var(--ease), filter .4s; }
+.ph figcaption { position: absolute; z-index: 1; left: 10px; bottom: 8px; right: 10px; font-size: 11px; color: rgba(255,255,255,.85); }
+.badge { position: absolute; z-index: 1; bottom: 10px; inset-inline-start: 10px; background: var(--tag); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+.kind { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.feat h3 { margin: 2px 0 6px; font-weight: 500; font-size: 23px; line-height: 1.2; text-wrap: balance; }
+.feat p { margin: 0; color: var(--ink); opacity: .85; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.feat__more { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--accent); opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .25s var(--ease); }
+.feat:hover .feat__more, .feat:focus-visible .feat__more { opacity: 1; transform: none; }
+/* Light green background on hover for section and event rows */
+.sec:hover, .sec:focus-visible, .ev__row:hover, .ev__row:focus-visible { background: var(--accent-soft); }
+/* Hover in all three columns: green text + a simple green underline */
+.sec h3, .feat h3, .ev__t, .col__end {
+  text-decoration-line: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: .22em;
+  transition: color .2s, text-decoration-color .2s;
+}
+.sec:hover h3, .sec:focus-visible h3,
+.feat:hover h3, .feat:focus-visible h3,
+.ev__row:hover .ev__t, .ev__row:focus-visible .ev__t, a.ev__t:hover, a.ev__t:focus-visible,
+.col__end:hover, .col__end:focus-visible { color: var(--accent); text-decoration-color: currentColor; }
+
+/* Today */
+.ev { list-style: none; margin: 0; padding: 0; }
+.ev li { border-bottom: 1px solid var(--rule); position: relative; }
+.ev__row { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px 10px; padding: 12px; text-decoration: none; transition: background .2s; }
+.ev__yr { color: var(--muted); font-variant-numeric: tabular-nums; transition: color .2s; padding-top: 1px; }
+.ev__t { font-weight: 500; font-size: 16px; line-height: 1.3; transition: color .2s; }
+/* Same arrow on sections and events */
+.sec h3::after, .ev__t::after { content: "\2192"; display: inline-block; margin-inline-start: .35em; font-family: var(--f-text); font-size: 16px; line-height: 1; vertical-align: .15em; color: var(--accent); opacity: 0; transform: translateX(-4px); transition: opacity .2s, transform .2s var(--ease); }
+.ev__row:hover .ev__t::after, .ev__row:focus-visible .ev__t::after { transform: none; }
+[dir="rtl"] .sec h3::after, [dir="rtl"] .ev__t::after { content: "\2190"; }
+.ev .ph { grid-column: 2; aspect-ratio: 3 / 2; }
+.ev__row:hover .ev__yr, .ev__row:focus-visible .ev__yr { color: var(--accent); }
+.ev__row:hover .ev__t, .ev__row:focus-visible .ev__t { color: var(--accent); }
+.ev__row:hover .ev__t::after, .ev__row:focus-visible .ev__t::after { opacity: 1; }
+.ev__row--thumb { grid-template-columns: 52px minmax(0, 1fr) 64px; }
+.ev__row--thumb .ph { grid-column: 3; grid-row: 1 / span 2; aspect-ratio: 1; width: 64px; }
+.ev__bio { grid-column: 2; font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent); transition: text-decoration-color .2s; }
+.ev__bio:hover { text-decoration-color: currentColor; }
+.col__end { display: inline-flex; align-items: center; gap: 6px; margin: 16px 12px 72px; font-weight: 600; font-size: 14px; color: var(--accent); text-decoration: none; }
+.col__end svg { width: 14px; height: 14px; transition: transform .25s var(--ease); }
+.col__end:hover svg { transform: translateX(4px); }
+
+
+
+
+/* ---------- Side menu (as on the live site) ---------- */
+.menu-scrim { position: fixed; inset: 0; z-index: 60; background: rgba(4, 22, 16, .5); opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+.menu-scrim.is-open { opacity: 1; visibility: visible; transition: opacity .3s; }
+.menu {
+  position: fixed; top: 0; bottom: 0; inset-inline-end: 0; z-index: 61; width: min(440px, 100%);
+  background: #06281e; color: #f2f5f1; overflow-y: auto; overscroll-behavior: contain;
+  display: flex; flex-direction: column;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) max(28px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) 28px;
+  transform: translateX(100%); visibility: hidden; transition: transform .35s var(--ease), visibility 0s .35s;
+}
+[dir="rtl"] .menu { transform: translateX(-100%); }
+.menu.is-open { transform: none; visibility: visible; transition: transform .35s var(--ease); }
+.menu__close { align-self: flex-end; width: 44px; height: 44px; margin-inline-end: -10px; display: grid; place-items: center; background: none; border: 0; border-radius: 50%; cursor: pointer; transition: background .15s; }
+.menu__close:hover { background: rgba(242, 245, 241, .1); }
+.menu__close img { width: 24px; height: 24px; }
+.menu__nav ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.menu__nav a {
+  display: inline-block; padding: 8px 0; color: #f2f5f1; font-family: var(--f-display); font-size: clamp(32px, 4.2vh, 40px); line-height: 1.15;
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .16em; text-decoration-color: rgba(242, 245, 241, .55);
+  transition: color .2s, text-decoration-color .2s;
+}
+.menu__nav a:hover, .menu__nav a:focus-visible { color: var(--hero-ar); text-decoration-color: currentColor; }
+.menu__about { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(242, 245, 241, .35); display: grid; gap: 20px; }
+.menu__about p { margin: 0; font-size: 14px; line-height: 1.5; max-width: 34ch; }
+.menu__about img { width: 112px; height: auto; display: block; }
+body.menu-open { overflow: hidden; }
+
+/* ---------- Mobile tabs for the three columns ---------- */
+.tabs { display: none; }
+
+/* ---------- Narrow screens: hero fixed, columns flow with the page ---------- */
+@media (max-width: 960px) {
+  :root { --hero-h: 82svh; --inset: 0px; }
+  .hero__inner { grid-template-columns: minmax(0, 1fr); align-content: space-between; padding-top: calc(var(--hdr) + 8px); }
+  .hero__inner { grid-template-rows: 1fr auto auto; }
+  .hero__lede { grid-column: 1; grid-row: 2; justify-self: start; }
+  .hero__by { grid-row: 3; }
+  .hero__by img { width: 210px; }
+  .hero__title img { width: min(560px, 100%); }
+  .panel { height: auto; }
+  .panel__grid { display: flex; flex-direction: column; height: auto; }
+  .col, body.is-docked .col { overflow: visible; padding-inline: 0; }
+  .col + .col { border-inline-start: 0; margin-top: 12px; }
+  .col__title { top: calc(var(--hdr) + env(safe-area-inset-top, 0px)); padding-inline: 0; }
+  .sec, .feat, .ev__row { padding-inline: 0; }
+  .col__fade { display: none; }
+  .col__end { margin: 16px 0 24px; }
+  .tabs {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top, 0px)); z-index: 6;
+    margin-inline: calc(-1 * var(--gutter)) calc(-1 * var(--gutter-r)); padding-inline: var(--gutter) var(--gutter-r);
+    background: var(--paper); border-bottom: 1px solid var(--rule); border-radius: inherit;
+  }
+  .tab {
+    appearance: none; background: none; border: 0; cursor: pointer; position: relative;
+    font: inherit; font-size: 15px; color: var(--muted); padding: 16px 4px 14px; text-align: center; transition: color .2s;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--ink); }
+  .tab::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: -1px; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform .25s var(--ease); }
+  .tab[aria-selected="true"]::after { transform: scaleX(1); }
+  .col:not(.is-active) { display: none; }
+  .col + .col { margin-top: 0; }
+  /* the tab names the column; keep only the small label (Editors' selection, 17 November) */
+  .col__title { position: static; font-size: 0; border: 0; padding: 14px 0 0; justify-content: flex-start; }
+  .col__title small { font-size: 13px; }
+  .col__title:not(:has(small)) { display: none; }
+}
+@media (max-width: 560px) {
+  .hdr__logo img { height: 30px; }
+  .hero__title img { width: min(330px, 86vw); }
+}
+@media (hover: none) {
+  .feat__more { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  .hero__inner { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <a class="hdr__logo" href="#top" aria-label="Interactive Encyclopedia of the Palestine Question, back to top"><picture class="logo--light-ui"><source media="(max-width: 960px)" srcset="assets/web/logo-mobile-dark.png"><img src="assets/web/logo-2l-dark.svg" alt=""></picture><picture class="logo--dark-ui"><source media="(max-width: 960px)" srcset="assets/web/logo-mobile-light.png"><img src="assets/web/logo-2l-light.svg" alt=""></picture></a>
+  <div class="hdr__spacer"></div>
+  <div class="lang">
+    <button class="hdr__btn lang__btn" type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu">English <svg class="lang__caret" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h14l-7 8z"/></svg><span class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">, change language</span></button>
+    <ul class="lang__menu" id="lang-menu" aria-labelledby="lang-btn">
+      <li><a href="#lang-en" hreflang="en" lang="en" aria-current="true">English <svg class="lang__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg></a></li>
+      <li><a href="#lang-ar" hreflang="ar"><span lang="ar" dir="rtl">العربية</span> <svg class="lang__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg></a></li>
+    </ul>
+  </div>
+  <button class="hdr__btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</header>
+
+<div class="menu-scrim" id="menu-scrim"></div>
+<aside class="menu" id="menu" aria-label="Main navigation" aria-hidden="true">
+  <button class="menu__close" type="button" id="menu-close" aria-label="Close menu"><img src="assets/web/close.svg" alt=""></button>
+  <nav class="menu__nav" aria-label="Main navigation">
+    <ul>
+      <li><a href="#search" id="menu-search">Search</a></li>
+      <li><a href="#chronologies">Chronologies</a></li>
+      <li><a href="#highlights">Highlights</a></li>
+      <li><a href="#biographies">Biographies</a></li>
+      <li><a href="#places">Places</a></li>
+      <li><a href="#documents">Documents</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+  <div class="menu__about">
+    <p>Conceived by the Institute for Palestine Studies, the Interactive Encyclopedia of the Palestine Question traces the history of modern Palestine, from the end of the Ottoman era to the present.</p>
+    <a href="https://www.palestine-studies.org/" target="_blank" rel="noopener"><img src="assets/web/ips_sidemenu_logo.png" alt="Institute for Palestine Studies" width="296" height="150"></a>
+  </div>
+</aside>
+
+<section class="hero" id="top" aria-label="Introduction">
+  <div class="hero__inner" id="hero-inner">
+    <h1 class="hero__title"><picture><source media="(max-width: 560px)" srcset="assets/web/logo-4l-light.svg"><img src="assets/web/logo-2l-light.svg" alt="Interactive Encyclopedia of the Palestine Question — الموسوعة التفاعلية للقضية الفلسطينية" width="634" height="161"></picture></h1>
+    <a class="hero__by" href="https://www.palestine-studies.org" target="_blank" rel="noopener"><span>A project by</span><img src="assets/web/logo-ips.svg" alt="Institute for Palestine Studies" width="354" height="46"></a>
+    <p class="hero__lede">Explore thousands of events, biographies, highlights, places and primary documents, in the first interactive platform entirely devoted to the Palestine Question. <a href="#about">Read more</a></p>
+  </div>
+</section>
+
+<main class="panel" id="panel">
+  <div class="tabs" role="tablist" aria-label="Home page sections" id="tabs">
+    <button class="tab" role="tab" type="button" id="tab-sections" aria-controls="col-sections" aria-selected="true">Sections</button>
+    <button class="tab" role="tab" type="button" id="tab-featured" aria-controls="col-featured" aria-selected="false" tabindex="-1">Featured</button>
+    <button class="tab" role="tab" type="button" id="tab-today" aria-controls="col-today" aria-selected="false" tabindex="-1">Today</button>
+  </div>
+  <div class="panel__grid">
+
+    <section class="col is-active" id="col-sections" aria-labelledby="t-sections" tabindex="0">
+      <h2 class="col__title" id="t-sections">Sections</h2>
+
+      <a class="sec" href="#chronologies"><h3>Chronologies</h3></a>
+      <a class="sec" href="#highlights"><h3>Highlights</h3></a>
+      <a class="sec" href="#biographies"><h3>Biographies</h3></a>
+      <a class="sec" href="#places"><h3>Places</h3></a>
+      <a class="sec" href="#documents"><h3>Documents</h3></a>
+      <button class="sec" type="button" id="search-toggle" aria-expanded="false" aria-controls="search-panel"><h3>Search</h3></button>
+      <div class="search-panel" id="search-panel">
+        <div>
+          <form role="search" id="search-form">
+            <input id="q" type="search" placeholder="Name, place, event, document…" aria-label="Search the encyclopedia" autocomplete="off" tabindex="-1">
+            <button type="submit" tabindex="-1">Search</button>
+          </form>
+          <div class="search-try"><span>Try</span><button type="button" tabindex="-1">Nakba</button><button type="button" tabindex="-1">Oslo</button><button type="button" tabindex="-1">Edward Said</button><button type="button" tabindex="-1">Resolution 194</button></div>
+          <p class="search-msg" id="search-msg" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="col__fade" aria-hidden="true"></div>
+      <div style="height:40px"></div>
+    </section>
+
+    <section class="col" id="col-featured" aria-labelledby="t-featured" tabindex="0">
+      <h2 class="col__title" id="t-featured">Featured <small>Editors' selection</small></h2>
+
+      <a class="feat" href="#japan">
+        <figure class="ph"><img class="ph__img" src="assets/web/japan-poster.jpg" alt="Exhibition poster in Japanese: a girl raising a victory sign above a refugee camp" loading="lazy" decoding="async"><span class="badge">Newly added</span></figure>
+        <span class="kind">Highlight</span>
+        <h3><span>Japan and the Palestine Question</span></h3>
+        <p>While Palestine was engulfed in war and indigenous Arab residents were expelled, Japan was under occupation by the Allied Powers, led by the United States. After the atomic bombings of Hiroshima on 6 August and …</p>
+        <span class="feat__more">Read highlight →</span>
+      </a>
+      <a class="feat" href="#said">
+        <figure class="ph"><img class="ph__img" src="assets/web/edward-said.jpg" alt="Portrait of Edward W. Said" loading="lazy" decoding="async"></figure>
+        <span class="kind">Biography</span>
+        <h3><span>Edward W. Said (1935-2003)</span></h3>
+        <p>Edward W. Said was born on 1 November 1935 to Wadih Said and Hilda Moussa in the Talbiyya neighborhood of Jerusalem. He had four sisters: Rose, Jane, Joyce, and Grace. Said's early education was in Cairo…</p>
+        <span class="feat__more">Read biography →</span>
+      </a>
+      <a class="feat" href="#madrid">
+        <figure class="ph"><img class="ph__img" src="assets/web/madrid-1991.jpg" alt="Delegations around the table at the Madrid Peace Conference, 1991" loading="lazy" decoding="async"></figure>
+        <span class="kind">Highlight</span>
+        <h3><span>Madrid and the Oslo Agreement, 1991-1993</span></h3>
+        <p>The 1991 Madrid Conference and the 1993 Oslo Agreement marked the beginning of the direct Israeli-Palestinian peace process. The Madrid Conference itself marked the first time that Israelis had sat down at a conference table with Arabs since the …</p>
+        <span class="feat__more">Read highlight →</span>
+      </a>
+      <a class="feat" href="#naji">
+        <figure class="ph"><img class="ph__img" src="assets/web/naji-al-ali.jpg" alt="Portrait of Naji al-Ali" loading="lazy" decoding="async" style="object-position:center 20%"></figure>
+        <span class="kind">Biography</span>
+        <h3><span>Naji al-Ali (1936-1987)</span></h3>
+        <p>Naji al-Ali was born in the village of al-Shajara, in the district of Tiberias. His father was Salim Hussein. His wife, Wadad Salih Nasr, was from the Palestinian town of Saffuriyya…</p>
+        <span class="feat__more">Read biography →</span>
+      </a>
+      <a class="col__end" href="#highlights">All highlights <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      <div class="col__fade" aria-hidden="true"></div>
+    </section>
+
+    <section class="col" id="col-today" aria-labelledby="t-today" tabindex="0">
+      <h2 class="col__title" id="t-today">It happened today <small>17 November</small></h2>
+      <ul class="ev">
+        <li><a class="ev__row" href="#e1"><span class="ev__yr">2020</span><span class="ev__t">PA Resumes Coordination with Israel, Receives Some Withheld Funds</span></a></li>
+        <li><a class="ev__row" href="#e2"><span class="ev__yr">2017</span><span class="ev__t">The Fate of the PLO Diplomatic Office in Washington</span></a></li>
+        <li><a class="ev__row" href="#e3"><span class="ev__yr">2012</span><span class="ev__t">Israel's 2012 Assault on Gaza, Day 4</span><figure class="ph" style="margin:0"><img class="ph__img" src="assets/web/gaza-2012.jpg" alt="Destroyed buildings in Gaza, November 2012" loading="lazy" decoding="async"></figure></a></li>
+        <li><a class="ev__row" href="#e4"><span class="ev__yr">2012</span><span class="ev__t">Assassination of Ousamah al-Qadi in Rafah</span></a></li>
+        <li><a class="ev__row" href="#e5"><span class="ev__yr">2009</span><span class="ev__t">Israel Approves a Major Settlement Plan in Gilo, East Jerusalem</span></a></li>
+        <li><a class="ev__row" href="#e6"><span class="ev__yr">2006</span><span class="ev__t">UNGA Res. ES-10/16: Calling upon Israel to Cease Operations and Withdraw from the Gaza Strip</span><figure class="ph" style="margin:0"><img class="ph__img" src="assets/web/unga-2006.jpg" alt="Speaker at the UN General Assembly podium" loading="lazy" decoding="async"></figure></a></li>
+        <li><a class="ev__row" href="#e7"><span class="ev__yr">2004</span><span class="ev__t">Israeli Attacks Resume: Operations Orange Iron, Violet Iron</span></a></li>
+        <li><div class="ev__row ev__row--thumb"><span class="ev__yr">1979</span><a class="ev__t" href="#e8">Death of Najati Sidqi in Athens</a><figure class="ph" style="margin:0"><img class="ph__img" src="assets/web/najati-sidqi.jpg" alt="Najati Sidqi as a young man in uniform" loading="lazy" decoding="async" style="object-position:center top"></figure><a class="ev__bio" href="#bio">Open Najati Sidqi's biography</a></div></li>
+      </ul>
+      <a class="col__end" href="#chronologies">Explore all events <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      <div class="col__fade" aria-hidden="true"></div>
+    </section>
+
+  </div>
+</main>
+
+
+<script>
+(function () {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+  /* Dock: panel reaches the header -> columns unlock */
+  const panel = document.getElementById('panel');
+  const hero = document.querySelector('.hero');
+  const heroInner = document.getElementById('hero-inner');
+  function update() {
+    const hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 60;
+    const top = panel.getBoundingClientRect().top;
+    document.body.classList.toggle('is-docked', top <= hdr + 1);
+    const start = heroInner.offsetHeight;
+    const p = Math.min(1, Math.max(0, 1 - (top - hdr) / Math.max(1, start - hdr)));
+    hero.style.setProperty('--dim', (p * 0.5).toFixed(3));
+    if (!reduce) heroInner.style.setProperty('--lift', p.toFixed(3));
+  }
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+
+  /* Column scroll state: shadow under sticky title, hide fade at the end */
+  document.querySelectorAll('.col').forEach(col => {
+    const s = () => {
+      col.classList.toggle('is-scrolled', col.scrollTop > 2);
+      col.classList.toggle('is-end', col.scrollTop + col.clientHeight >= col.scrollHeight - 4);
+    };
+    col.addEventListener('scroll', s, { passive: true }); s();
+  });
+
+  /* Prototype: links don't navigate */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    if (a.classList.contains('hdr__logo')) return;
+    a.addEventListener('click', e => e.preventDefault());
+  });
+  document.querySelector('.hdr__logo').addEventListener('click', e => { e.preventDefault(); scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
+
+  /* Language dropdown */
+  const langBtn = document.getElementById('lang-btn');
+  const langMenu = document.getElementById('lang-menu');
+  const langItems = [...langMenu.querySelectorAll('a')];
+  function setLang(open, focusFirst) {
+    langBtn.setAttribute('aria-expanded', open);
+    langMenu.classList.toggle('is-open', open);
+    if (open && focusFirst) (langMenu.querySelector('[aria-current="true"]') || langItems[0]).focus();
+  }
+  langBtn.addEventListener('click', () => setLang(langBtn.getAttribute('aria-expanded') !== 'true', false));
+  langBtn.addEventListener('keydown', e => { if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLang(true, true); } });
+  langMenu.addEventListener('keydown', e => {
+    const i = langItems.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); langItems[(i + 1) % langItems.length].focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); langItems[(i - 1 + langItems.length) % langItems.length].focus(); }
+    if (e.key === 'Escape') { setLang(false); langBtn.focus(); }
+    if (e.key === 'Tab') setLang(false);
+  });
+  langItems.forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    /* Live site: follow a.href to the Arabic version (/ar/...) */
+    setLang(false); langBtn.focus();
+  }));
+  document.addEventListener('click', e => { if (!e.target.closest('.lang')) setLang(false); });
+
+  /* Side menu */
+  const menu = document.getElementById('menu');
+  const menuBtn = document.getElementById('menu-btn');
+  const scrim = document.getElementById('menu-scrim');
+  function setMenu(open) {
+    menu.classList.toggle('is-open', open); scrim.classList.toggle('is-open', open);
+    menu.setAttribute('aria-hidden', !open); menuBtn.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('menu-open', open);
+    if (open) setTimeout(() => menu.querySelector('.menu__nav a').focus({ preventScroll: true }), 50);
+    else menuBtn.focus({ preventScroll: true });
+  }
+  menuBtn.addEventListener('click', () => setMenu(true));
+  document.getElementById('menu-close').addEventListener('click', () => setMenu(false));
+  scrim.addEventListener('click', () => setMenu(false));
+  menu.addEventListener('keydown', e => {
+    if (e.key === 'Escape') setMenu(false);
+    if (e.key === 'Tab') {
+      const f = [...menu.querySelectorAll('button, a')]; const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  menu.querySelectorAll('.menu__nav a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); if (a.id !== 'menu-search') setMenu(false); }));
+
+  /* Mobile tabs */
+  const mq = matchMedia('(max-width: 960px)');
+  const tabs = [...document.querySelectorAll('.tab')];
+  function selectTab(tab, focus) {
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).classList.toggle('is-active', on);
+    });
+    if (focus) tab.focus();
+    if (mq.matches) {
+      const hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 60;
+      const top = panel.getBoundingClientRect().top + scrollY - hdr;
+      if (scrollY > top) scrollTo({ top, behavior: 'auto' });
+    }
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => selectTab(t));
+    t.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const step = (e.key === 'ArrowRight') !== (document.dir === 'rtl') ? 1 : -1;
+        selectTab(tabs[(i + step + tabs.length) % tabs.length], true);
+      }
+    });
+  });
+
+  /* Search section: expands in place */
+  const tog = document.getElementById('search-toggle');
+  const sp = document.getElementById('search-panel');
+  const q = document.getElementById('q');
+  const inner = sp.querySelectorAll('input, button');
+  tog.addEventListener('click', () => {
+    const open = tog.getAttribute('aria-expanded') !== 'true';
+    tog.setAttribute('aria-expanded', open);
+    sp.classList.toggle('is-open', open);
+    inner.forEach(el => el.tabIndex = open ? 0 : -1);
+    if (open) setTimeout(() => { q.focus({ preventScroll: true }); sp.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' }); }, 200);
+  });
+  const msg = document.getElementById('search-msg');
+  function go(term) {
+    term = term.trim();
+    msg.textContent = term ? 'Opens results for “' + term + '”' : 'Type a name, place, event or document.';
+  }
+  document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); go(q.value); });
+  sp.querySelectorAll('.search-try button').forEach(b => b.addEventListener('click', () => { q.value = b.textContent; go(b.textContent); q.focus(); }));
+  q.addEventListener('keydown', e => { if (e.key === 'Escape') { tog.click(); tog.focus(); } });
+  document.getElementById('menu-search').addEventListener('click', () => {
+    setMenu(false);
+    selectTab(tabs[0]);
+    const hdr = parseFloat(getComputedStyle(root).getPropertyValue('--hdr')) || 60;
+    scrollTo({ top: panel.getBoundingClientRect().top + scrollY - hdr, behavior: reduce ? 'auto' : 'smooth' });
+    if (tog.getAttribute('aria-expanded') !== 'true') setTimeout(() => tog.click(), reduce ? 0 : 450);
+  });
+})();
+</script>
+</body>
+</html>

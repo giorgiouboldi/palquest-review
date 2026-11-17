@@ -15,11 +15,24 @@ Prototype: [home.html](home.html)
 
 **Banner and navigation**
 - The IPS logo is in the bottom-left of the banner, labelled "A project by".
-- The banner photos change every 5 seconds with a slow fade.
+- The logo and text in the banner and navigation bar now share the same side margins as the columns below, so everything lines up.
+- The banner is a series of archival photos that fade slowly into each other every 5 seconds, instead of a single image. This gives the site a stronger visual identity and shows more of the archive.
 - The language switch is now a dropdown (English, Arabic).
 - On mobile, the navigation bar uses the compact logo: English on the English site, Arabic on the Arabic site. The logo files can be provided again if needed.
+
+**Sections**
+- Search is now listed with the sections, after Documents, and opens a search box in place. Search is one of the main ways into the encyclopedia, so it should be on the home page.
+
+**Event panel**
+- The panel closes when you click anywhere outside it, as well as with Close or the Escape key.
+- An "Open event in chronologies" button replaces the small icon next to the title. A labelled button makes it clearer what the link does.
 
 **Hover and click**
 - The whole row or card is clickable, not only the text. This also makes items easier to tap on mobile.
 - Hovering a section or event highlights the row in light green and shows an arrow.
 - Hovering a featured item shows "Read highlight →" or "Read biography →".
+- Images in Featured and It happened today zoom in slightly on hover.
+
+## Developer notes
+
+Bugs, URL handling, chronology and filter issues, fonts, accessibility and Drupal housekeeping, with suggested fixes: [docs/developer-notes.md](docs/developer-notes.md)

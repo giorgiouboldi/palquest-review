@@ -188,6 +188,8 @@ body.is-docked .col { overflow-y: auto; scrollbar-width: thin; scrollbar-color: 
 .feat p { margin: 0; color: var(--ink); opacity: .85; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .feat__more { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--accent); opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .25s var(--ease); }
 .feat:hover .feat__more, .feat:focus-visible .feat__more { opacity: 1; transform: none; }
+/* Images zoom in slightly on hover (featured cards and events) */
+.feat:hover .ph__img, .feat:focus-visible .ph__img, .ev__row:hover .ph__img, .ev__row:focus-visible .ph__img { transform: scale(1.05); }
 /* Light green background on hover for section and event rows */
 .sec:hover, .sec:focus-visible, .ev__row:hover, .ev__row:focus-visible { background: var(--accent-soft); }
 /* Hover in all three columns: green text + a simple green underline */
@@ -306,6 +308,7 @@ body.menu-open { overflow: hidden; }
 }
 /* the 1979 row has no event page: no hover */
 .ev__row--thumb:hover { background: none; }
+.ev__row--thumb:hover .ph__img { transform: none; }
 .ev__row--thumb:hover .ev__yr { color: var(--muted); }
 
 /* ---------- Mobile tabs for the three columns ---------- */

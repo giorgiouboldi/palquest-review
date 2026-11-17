@@ -13,6 +13,7 @@ html, body { margin: 0; }
 img { max-width: 100%; }
 /* Layout: the live site's hero + three equal columns. Hero stays fixed; the column panel slides over it, docks under the header, then each column scrolls on its own with a sticky title. */
 :root {
+  color-scheme: light;
   --paper: #ffffff;
   --paper-2: #f2f5f2;
   --ink: #0f2a20;
@@ -40,18 +41,6 @@ img { max-width: 100%; }
   --edge-l: calc(max(var(--gutter), (100% - var(--container)) / 2) + var(--inset));
   --edge-r: calc(max(var(--gutter-r), (100% - var(--container)) / 2) + var(--inset));
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0f1714; --paper-2: #17221d; --ink: #e3ebe6; --muted: #93a39b; --rule: #26332d;
-    --accent: #6cc3a0; --accent-soft: #1a3329; --tag: #ec6d9b; --shadow: 0 -16px 36px rgba(0,0,0,.55);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #0f1714; --paper-2: #17221d; --ink: #e3ebe6; --muted: #93a39b; --rule: #26332d;
-  --accent: #6cc3a0; --accent-soft: #1a3329; --tag: #ec6d9b; --shadow: 0 -16px 36px rgba(0,0,0,.55);
-  color-scheme: dark;
-}
 
 * { box-sizing: border-box; }
 body { font-synthesis: none; background: var(--hero-bg); color: var(--ink); font-family: var(--f-text); font-size: 15px; line-height: 1.5; }
@@ -73,10 +62,6 @@ body.is-docked .hdr { background: var(--paper); color: var(--ink); box-shadow: 0
   opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity .3s, transform .3s var(--ease);
 }
 .hdr__logo img { height: 44px; width: auto; display: block; }
-.hdr__logo .logo--dark-ui { display: none; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hdr__logo .logo--light-ui { display: none; } :root:not([data-theme="light"]) .hdr__logo .logo--dark-ui { display: block; } }
-:root[data-theme="dark"] .hdr__logo .logo--light-ui { display: none; }
-:root[data-theme="dark"] .hdr__logo .logo--dark-ui { display: block; }
 body.is-docked .hdr__logo { opacity: 1; transform: none; pointer-events: auto; }
 .hdr__spacer { flex: 1; }
 .hdr__btn {
@@ -113,8 +98,18 @@ body.is-docked .hdr__logo { opacity: 1; transform: none; pointer-events: auto; }
 
 /* ---------- Hero (fixed, as on the live site) ---------- */
 .hero { position: fixed; inset: 0 0 auto; height: 100svh; z-index: 0; color: var(--hero-ink); background: var(--hero-bg); overflow: hidden; }
-.hero { background: var(--hero-bg) url("assets/web/hero.jpg") center 30% / cover no-repeat; }
-@media (max-width: 960px) { .hero { background-image: url("assets/web/hero-1200.jpg"); } }
+/* Hero slideshow: three photos, 5 s each, slow cross-fade */
+.hero__slides { position: absolute; inset: 0; }
+.hero__slide { position: absolute; inset: 0; background: center 35% / cover no-repeat; opacity: 0; transition: opacity 2.4s ease-in-out; }
+.hero__slide.is-on { opacity: 1; }
+.hero__slide--1 { background-image: url("assets/web/hero.jpg"); background-position: center 30%; }
+.hero__slide--2 { background-image: url("assets/web/hero-2.jpg"); }
+.hero__slide--3 { background-image: url("assets/web/hero-3.jpg"); }
+@media (max-width: 960px) {
+  .hero__slide--1 { background-image: url("assets/web/hero-1200.jpg"); }
+  .hero__slide--2 { background-image: url("assets/web/hero-2-1200.jpg"); }
+  .hero__slide--3 { background-image: url("assets/web/hero-3-1200.jpg"); }
+}
 .hero::after { content: ""; position: absolute; inset: 0; background: #000; opacity: var(--dim, 0); pointer-events: none; }
 .hero__inner {
   position: relative; z-index: 1; height: var(--hero-h);
@@ -202,7 +197,7 @@ body.is-docked .col { overflow-y: auto; scrollbar-width: thin; scrollbar-color: 
 }
 .sec:hover h3, .sec:focus-visible h3,
 .feat:hover h3, .feat:focus-visible h3,
-.ev__row:hover .ev__t, .ev__row:focus-visible .ev__t, a.ev__t:hover, a.ev__t:focus-visible,
+.ev__row:hover .ev__t, .ev__row:focus-visible .ev__t, 
 .col__end:hover, .col__end:focus-visible { color: var(--accent); text-decoration-color: currentColor; }
 
 /* Today */
@@ -256,6 +251,62 @@ body.is-docked .col { overflow-y: auto; scrollbar-width: thin; scrollbar-color: 
 .menu__about p { margin: 0; font-size: 14px; line-height: 1.5; max-width: 34ch; }
 .menu__about img { width: 112px; height: auto; display: block; }
 body.menu-open { overflow: hidden; }
+
+/* ---------- Event panel (as on the live site) ---------- */
+.ev-scrim { position: fixed; inset: 0; z-index: 70; background: rgba(15, 42, 32, .28); opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; cursor: pointer; }
+.ev-scrim.is-open { opacity: 1; visibility: visible; transition: opacity .3s; }
+.ev-panel {
+  position: fixed; top: 0; bottom: 0; inset-inline-end: 0; z-index: 71; width: min(680px, 100%);
+  background: var(--paper); color: var(--ink); overflow-y: auto; overscroll-behavior: contain;
+  box-shadow: -20px 0 50px rgba(6, 25, 18, .18);
+  transform: translateX(100%); visibility: hidden; transition: transform .35s var(--ease), visibility 0s .35s;
+}
+[dir="rtl"] .ev-panel { transform: translateX(-100%); }
+.ev-panel.is-open { transform: none; visibility: visible; transition: transform .35s var(--ease); }
+.ev-panel__bar {
+  position: sticky; top: 0; z-index: 1; display: flex; justify-content: flex-end; align-items: center;
+  height: 72px; padding: env(safe-area-inset-top, 0px) 32px 0; background: var(--paper); border-bottom: 1px solid var(--rule);
+}
+.ev-panel__close {
+  background: none; border: 0; padding: 8px 0; cursor: pointer; color: var(--ink);
+  font: inherit; font-size: 15px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; transition: color .2s;
+}
+.ev-panel__close:hover, .ev-panel__close:focus-visible { color: var(--accent); }
+.ev-panel__body { padding: 20px 32px calc(48px + env(safe-area-inset-bottom, 0px)); }
+.ev-panel__date { margin: 0; font-size: 17px; font-variant-numeric: tabular-nums; }
+.ev-panel__title { margin: 6px 0 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(32px, 4.4vw, 48px); line-height: 1.12; text-wrap: balance; }
+.ev-meta { margin: 36px 0 0; display: grid; grid-template-columns: minmax(96px, 30%) minmax(0, 1fr); border-top: 1px solid var(--rule); }
+.ev-meta dt, .ev-meta dd { margin: 0; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 16px; line-height: 1.4; }
+.ev-meta dt { color: var(--muted); }
+.ev-meta a, .ev-panel__text a {
+  color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em;
+  transition: color .2s, text-decoration-color .2s;
+}
+.ev-panel__text a { text-decoration-color: var(--accent); }
+.ev-meta a:hover, .ev-panel__text a:hover, .ev-meta a:focus-visible, .ev-panel__text a:focus-visible { color: var(--accent); text-decoration-color: currentColor; }
+.ev-panel__text { margin-top: 32px; font-size: 17px; line-height: 1.55; max-width: 62ch; }
+.ev-panel__text p { margin: 0 0 1em; }
+.ev-panel__fig { margin: 8px 0 24px; }
+.ev-panel__fig img { display: block; width: 100%; height: auto; border-radius: 2px; }
+.ev-panel__fig figcaption { margin-top: 8px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+.ev-open {
+  display: inline-flex; align-items: center; gap: 12px; margin-top: 8px; padding: 14px 20px;
+  background: var(--ink); color: #fff; border-radius: 4px; text-decoration: none; font-size: 16px;
+  transition: background .2s;
+}
+.ev-open svg { width: 18px; height: 18px; transition: transform .25s var(--ease); }
+.ev-open:hover, .ev-open:focus-visible { background: var(--accent); }
+.ev-open:hover svg, .ev-open:focus-visible svg { transform: translateX(4px); }
+@media (max-width: 560px) {
+  .ev-panel__bar { height: 60px; padding-inline: 16px; }
+  .ev-panel__body { padding-inline: 16px; }
+  .ev-meta dt, .ev-meta dd, .ev-panel__text { font-size: 16px; }
+  .ev-open { width: 100%; justify-content: center; }
+}
+/* the 1979 row has no event page: no hover */
+.ev__row--thumb:hover { background: none; }
+.ev__row--thumb:hover .ev__yr { color: var(--muted); }
 
 /* ---------- Mobile tabs for the three columns ---------- */
 .tabs { display: none; }
@@ -314,7 +365,7 @@ body.menu-open { overflow: hidden; }
 <body>
 
 <header class="hdr">
-  <a class="hdr__logo" href="#top" aria-label="Interactive Encyclopedia of the Palestine Question, back to top"><picture class="logo--light-ui"><source media="(max-width: 960px)" srcset="assets/web/logo-mobile-dark.png"><img src="assets/web/logo-2l-dark.svg" alt=""></picture><picture class="logo--dark-ui"><source media="(max-width: 960px)" srcset="assets/web/logo-mobile-light.png"><img src="assets/web/logo-2l-light.svg" alt=""></picture></a>
+  <a class="hdr__logo" href="#top" aria-label="Interactive Encyclopedia of the Palestine Question, back to top"><picture><source media="(max-width: 960px)" srcset="assets/web/logo-mobile-dark.png"><img src="assets/web/logo-2l-dark.svg" alt=""></picture></a>
   <div class="hdr__spacer"></div>
   <div class="lang">
     <button class="hdr__btn lang__btn" type="button" id="lang-btn" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu">English <svg class="lang__caret" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h14l-7 8z"/></svg><span class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">, change language</span></button>
@@ -325,6 +376,19 @@ body.menu-open { overflow: hidden; }
   </div>
   <button class="hdr__btn" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </header>
+
+
+<div class="ev-scrim" id="ev-scrim"></div>
+<aside class="ev-panel" id="ev-panel" role="dialog" aria-modal="true" aria-labelledby="ev-title" aria-hidden="true">
+  <div class="ev-panel__bar"><button class="ev-panel__close" type="button" id="ev-close">Close</button></div>
+  <div class="ev-panel__body">
+    <p class="ev-panel__date" id="ev-date"></p>
+    <h2 class="ev-panel__title" id="ev-title"></h2>
+    <dl class="ev-meta" id="ev-meta"></dl>
+    <div class="ev-panel__text" id="ev-text"></div>
+    <a class="ev-open" id="ev-open" href="#">Open event in chronologies <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 9h13M10 4l5 5-5 5"/></svg></a>
+  </div>
+</aside>
 
 <div class="menu-scrim" id="menu-scrim"></div>
 <aside class="menu" id="menu" aria-label="Main navigation" aria-hidden="true">
@@ -347,6 +411,11 @@ body.menu-open { overflow: hidden; }
 </aside>
 
 <section class="hero" id="top" aria-label="Introduction">
+  <div class="hero__slides" aria-hidden="true">
+    <div class="hero__slide hero__slide--1 is-on"></div>
+    <div class="hero__slide hero__slide--2"></div>
+    <div class="hero__slide hero__slide--3"></div>
+  </div>
   <div class="hero__inner" id="hero-inner">
     <h1 class="hero__title"><picture><source media="(max-width: 560px)" srcset="assets/web/logo-4l-light.svg"><img src="assets/web/logo-2l-light.svg" alt="Interactive Encyclopedia of the Palestine Question — الموسوعة التفاعلية للقضية الفلسطينية" width="634" height="161"></picture></h1>
     <a class="hero__by" href="https://www.palestine-studies.org" target="_blank" rel="noopener"><span>A project by</span><img src="assets/web/logo-ips.svg" alt="Institute for Palestine Studies" width="354" height="46"></a>
@@ -430,7 +499,7 @@ body.menu-open { overflow: hidden; }
         <li><a class="ev__row" href="#e5"><span class="ev__yr">2009</span><span class="ev__t">Israel Approves a Major Settlement Plan in Gilo, East Jerusalem</span></a></li>
         <li><a class="ev__row" href="#e6"><span class="ev__yr">2006</span><span class="ev__t">UNGA Res. ES-10/16: Calling upon Israel to Cease Operations and Withdraw from the Gaza Strip</span><figure class="ph" style="margin:0"><img class="ph__img" src="assets/web/unga-2006.jpg" alt="Speaker at the UN General Assembly podium" loading="lazy" decoding="async"></figure></a></li>
         <li><a class="ev__row" href="#e7"><span class="ev__yr">2004</span><span class="ev__t">Israeli Attacks Resume: Operations Orange Iron, Violet Iron</span></a></li>
-        <li><div class="ev__row ev__row--thumb"><span class="ev__yr">1979</span><a class="ev__t" href="#e8">Death of Najati Sidqi in Athens</a><figure class="ph" style="margin:0"><img class="ph__img" src="assets/web/najati-sidqi.jpg" alt="Najati Sidqi as a young man in uniform" loading="lazy" decoding="async" style="object-position:center top"></figure><a class="ev__bio" href="#bio">Open Najati Sidqi's biography</a></div></li>
+        <li><div class="ev__row ev__row--thumb"><span class="ev__yr">1979</span><span class="ev__t">Death of Najati Sidqi in Athens</span><figure class="ph" style="margin:0"><img class="ph__img" src="assets/web/najati-sidqi.jpg" alt="Najati Sidqi as a young man in uniform" loading="lazy" decoding="async" style="object-position:center top"></figure><a class="ev__bio" href="#bio">Open Najati Sidqi's biography</a></div></li>
       </ul>
       <a class="col__end" href="#chronologies">Explore all events <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
       <div class="col__fade" aria-hidden="true"></div>
@@ -478,6 +547,18 @@ body.menu-open { overflow: hidden; }
     a.addEventListener('click', e => e.preventDefault());
   });
   document.querySelector('.hdr__logo').addEventListener('click', e => { e.preventDefault(); scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
+
+  /* Hero slideshow: next photo every 5 s; paused when the tab is hidden or motion is reduced */
+  const slides = [...document.querySelectorAll('.hero__slide')];
+  let slideIdx = 0;
+  if (!reduce && slides.length > 1) {
+    setInterval(() => {
+      if (document.hidden) return;
+      slides[slideIdx].classList.remove('is-on');
+      slideIdx = (slideIdx + 1) % slides.length;
+      slides[slideIdx].classList.add('is-on');
+    }, 5000);
+  }
 
   /* Language dropdown */
   const langBtn = document.getElementById('lang-btn');
@@ -553,6 +634,74 @@ body.menu-open { overflow: hidden; }
         selectTab(tabs[(i + step + tabs.length) % tabs.length], true);
       }
     });
+  });
+
+  /* Event panel: text from the dev site (views/ajax fill_event_container) */
+  const L = t => '<a href="#">' + t + '</a>';
+  const EVENTS = {
+    e1: { nid: 36325, date: '17 November 2020 — 2 December 2020', title: 'PA Resumes Coordination with Israel, Receives Some Withheld Funds',
+      meta: [['Location', ['West Bank', 'Israel']], ['Actors', ['Israel Governmental']], ['Subjects', ['Diplomatic', 'Social-Economic']]],
+      text: ['PA Civil Affairs Minister Hussein al-Sheikh announces that he has received an official letter from the Israeli government acknowledging that “the bilateral Israeli-Palestinian agreements remain the applicable legal framework governing the conduct of the two sides.” Accordingly, al-Sheikh says that the PA will resume coordination with Israel, including security coordination, after suspending ties on 19 May. Hamas and Islamic Jihad condemn the PA’s move, saying it undermines reconciliation efforts. Prime Minister Muhammad Shtayyeh links the decision to the COVID-19 pandemic, saying the PA has struggled to find the resources to fight it.',
+             'On 19 November, al-Sheikh announces that Israel will pay the PA $890 million in tax revenues it had withheld from the PA. The Israeli Security Cabinet only agrees to pay the PA $756 million, deducting $181.5 million that Israel says the PA pays to Palestinian prisoners and their families. On 2 December, the PA starts paying civil servants their full salaries plus backpay from reduced salaries.'] },
+    e2: { nid: 22598, date: '17 November 2017', title: 'The Fate of the PLO Diplomatic Office in Washington',
+      meta: [['Location', ['USA']], ['Actors', ['USA Governmental', 'Palestine Governmental']], ['Subjects', ['Diplomatic', 'Policy-Program']]],
+      text: ['According to reports published on 17 November, the US State Department had recently notified the Palestine Liberation Organization (PLO) diplomatic office in Washington that it could be forcibly closed unless the PLO enters peace negotiations with Israel. The US move is based on the Appropriation Act signed on 18 December 2015 and is allegedly related to President ' + L('Mahmoud Abbas') + '’s expressions of support for an International Criminal Court investigation and prosecution of Israelis in his speech to the UN General Assembly on 20 September.',
+             L('Riyad al-Maliki') + ', Palestinian minister of foreign affairs, responds (18 November) that the Palestinians will not give in to US “extortion.” However, on 24 November, a State Department spokesperson announces that the PLO office will be allowed to remain open for another 90 days, during which the office is advised “to limit its activities to those related to achieving a lasting, comprehensive peace between the Israelis and Palestinians.”'] },
+    e3: { nid: 15166, date: '17 November 2012', title: 'Israel’s 2012 Assault on Gaza, Day 4',
+      meta: [['Location', ['Egypt', 'Gaza Strip', 'Israel']], ['Actors', ['Israel Governmental', 'Palestine Quasi-Governmental', 'Egypt Governmental']], ['Subjects', ['Violence', 'Diplomatic']]],
+      text: ['Nearly 20 more Palestinians are killed and 300 Israeli air strikes are carried out during the day. As the Palestinian death toll approaches 50, with scores more wounded, ' + L('Gaza') + '’s hospitals feel the strain. Palestinian armed groups fire more than 70 rockets into Israel. Israel says its Iron Dome defense system intercepted 57 of them; 16 Israelis are injured. Tunisian FM Rafik Abdesslem makes a solidarity visit to the Gaza Strip.',
+             'Most of the diplomatic focus is on tentative Egyptian efforts to mediate a cease-fire. In ' + L('Cairo') + ', Egyptian president Morsi holds talks with Turkish prime minister ' + L('Recep Tayyip Erdogan') + ', ' + L('Qatar') + '’s Emir Shaykh Hamad bin Khalifa Al Thani, Hamas leader ' + L('Khalid Mishal') + ', and Islamic Jihad leader ' + L('Ramadan Shalah') + '.'],
+      img: ['assets/web/gaza-2012.jpg', 'The ruins of the Council of Ministers building, which was completely demolished following a second Israeli air strike early in the morning.'] },
+    e4: { nid: 33617, date: '17 November 2012', title: 'Assassination of Ousamah al-Qadi in Rafah',
+      meta: [['Location', ['Gaza Strip']], ['Actors', ['Israel Governmental']], ['Subjects', ['Violence', 'Biographical']]],
+      text: ['In ' + L('Rafah') + ', Israeli forces fire a missile at a motorcycle carrying Ousamah al-Qadi, a member of Izzeddin al-Qassam Brigades, killing him and another man.'] },
+    e5: { nid: 12497, date: '17 November 2009', title: 'Israel Approves a Major Settlement Plan in Gilo, East Jerusalem',
+      meta: [['Location', ['West Bank']], ['Actors', ['Israel Governmental']], ['Subjects', ['Colonization']]],
+      text: ['The Israeli Interior Minister approves construction of 900 new housing units in ' + L('Gilo') + ' settlement. The announcement precipitates criticism from the ' + L('White House') + ' not only for the Gilo project but for “the continued pattern of evictions and demolitions of Palestinian homes” in ' + L('East Jerusalem') + '.'] },
+    e6: { nid: 12735, date: '17 November 2006', title: 'UNGA Res. ES-10/16: Calling upon Israel to Cease Operations and Withdraw from the Gaza Strip',
+      meta: [['Actors', ['UN Inter-Governmental']], ['Subjects', ['Diplomatic', 'Violence']]],
+      text: ['The General Assembly meets within the framework of the emergency session opened in April 1997. It “calls upon Israel, the occupying Power, to immediately cease its military operations that endanger the Palestinian civilian population in the Occupied Palestinian Territory, including ' + L('East Jerusalem') + ', and to immediately withdraw its forces from within the Gaza Strip to positions held prior to 28 June 2006” and “requests the Secretary-General to establish a fact-finding mission on the attack that took place in Beit Hanoun on 8 November 2006.”'],
+      img: ['assets/web/unga-2006.jpg', 'Riyad H. Mansour, Permanent Observer of Palestine to the United Nations, speaking at the resumed 28th meeting of the Tenth Emergency Special Session.'] },
+    e7: { nid: 12867, date: '17 November 2004 — 28 December 2004', title: 'Israeli Attacks Resume: Operations Orange Iron, Violet Iron',
+      meta: [['Location', ['Israel', 'Gaza Strip', 'West Bank']], ['Actors', ['Israel Governmental', 'Palestine Non-Governmental']], ['Subjects', ['Violence', 'Sanctions']]],
+      text: ['With the end of the mourning period (12–16 November), Israel resumes its raids on Palestinian localities (' + L('al-Bureij') + ', 17 November) and its targeted killings (in ' + L('Beitunia') + ', 21 November; ' + L('Hebron') + ', 25 November; ' + L('Jenin') + ', 3 December) in spite of serious Palestinian efforts to stop anti-Israeli attacks. Since the end of October, when Arafat was struggling for his life in ' + L('Paris') + ', all Palestinian factions had pledged to close ranks, preserve calm and not give Israel any excuses to stage another military operation.',
+             'Palestinians in the Gaza Strip respond to Israeli raids with rocket fire and sniping and through detonating a massive bomb beneath an army checkpoint on the Gaza–' + L('Egypt') + ' border (11 December), killing 5 soldiers and wounding 10. Israel reacts with Operation Orange Iron against Khan Yunis (16–18 December), leaving 11 Palestinians dead and 53 injured. As Palestinians continue firing rockets, Israel launches Operation Violet Iron (21–28 December): 11 Palestinians are killed in Khan Yunis and 36 are wounded.'] }
+  };
+  const evPanel = document.getElementById('ev-panel');
+  const evScrim = document.getElementById('ev-scrim');
+  let evReturn = null;
+  function openEvent(key, from) {
+    const ev = EVENTS[key]; if (!ev) return;
+    document.getElementById('ev-date').textContent = ev.date;
+    document.getElementById('ev-title').textContent = ev.title;
+    document.getElementById('ev-meta').innerHTML = ev.meta.map(([k, v]) =>
+      '<dt>' + (k === 'Subjects' && v.length === 1 ? 'Subject' : k) + '</dt><dd>' + v.map(L).join(', ') + '</dd>').join('');
+    const fig = ev.img ? '<figure class="ev-panel__fig"><img src="' + ev.img[0] + '" alt=""><figcaption>' + ev.img[1] + '</figcaption></figure>' : '';
+    document.getElementById('ev-text').innerHTML = ev.text.map(t => '<p>' + t + '</p>').join('') + fig;
+    document.getElementById('ev-open').href = '/en/chronology-events?nid=' + ev.nid;
+    evReturn = from || null;
+    evPanel.scrollTop = 0;
+    evPanel.classList.add('is-open'); evScrim.classList.add('is-open');
+    evPanel.setAttribute('aria-hidden', 'false'); document.body.classList.add('menu-open');
+    setTimeout(() => document.getElementById('ev-close').focus({ preventScroll: true }), 50);
+  }
+  function closeEvent() {
+    if (!evPanel.classList.contains('is-open')) return;
+    evPanel.classList.remove('is-open'); evScrim.classList.remove('is-open');
+    evPanel.setAttribute('aria-hidden', 'true'); document.body.classList.remove('menu-open');
+    if (evReturn) evReturn.focus({ preventScroll: true });
+  }
+  document.querySelectorAll('a.ev__row[href^="#e"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); openEvent(a.getAttribute('href').slice(1), a); }));
+  document.getElementById('ev-close').addEventListener('click', closeEvent);
+  evScrim.addEventListener('click', closeEvent);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEvent(); });
+  evPanel.addEventListener('click', e => { const a = e.target.closest('a'); if (a && a.getAttribute('href') !== null && a.id !== 'ev-open') e.preventDefault(); });
+  document.getElementById('ev-open').addEventListener('click', e => e.preventDefault());
+  evPanel.addEventListener('keydown', e => {
+    if (e.key !== 'Tab') return;
+    const f = [...evPanel.querySelectorAll('button, a')]; const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
   /* Search section: expands in place */

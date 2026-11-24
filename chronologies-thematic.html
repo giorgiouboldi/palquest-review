@@ -252,6 +252,35 @@ button, input, select { font: inherit; color: inherit; }
 .tl:hover .tl__track i { background: #3d9a78; }
 .tl:hover .tl__name { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
 .tl { cursor: pointer; }
+
+/* Toolbar dropdown */
+.dd { height: 32px; padding: 0 28px 0 12px; border: 0; border-radius: 6px; background: var(--ink); color: #fff; font: inherit; font-size: 14px; cursor: pointer; }
+/* Timeline: bars across the full width, behind the title */
+.tl { position: relative; min-height: 48px; border-top: 1px solid var(--rule); }
+.tl:last-child { border-bottom: 1px solid var(--rule); }
+.tl__track { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.tl__track i { position: absolute; top: 0; bottom: 0; background: var(--hl); transition: background-color .3s var(--ease); }
+.tl__lead { position: relative; z-index: 1; display: grid; grid-template-columns: 40px 96px minmax(0, 360px); gap: 12px; align-items: center; padding: 6px 0; pointer-events: none; }
+.tl__thumb img { width: 40px; height: 40px; object-fit: cover; display: block; }
+.tl__y { font-size: 13px; color: var(--grey); white-space: nowrap; }
+.tl__name { display: block; font-size: 14px; line-height: 1.3; }
+.tl__cat { display: block; font-size: 12px; color: var(--grey); margin-top: 2px; }
+.tl:hover .tl__track i { background: #3d9a78; }
+/* Grid */
+.gwrap { display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: 48px; align-items: start; }
+.gcats { list-style: none; margin: 0; padding: 0; position: sticky; top: 160px; }
+.gcats li + li { margin-top: 12px; }
+.gcat { all: unset; cursor: pointer; font-size: 12px; line-height: 1.3; color: var(--grey); transition: color .2s var(--ease); }
+.gcat:hover { color: var(--hl); }
+.gcat.is-on { color: var(--ink); }
+.ggrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+.gcard { display: grid; grid-template-columns: minmax(0, 1fr) 140px; gap: 16px; align-items: start; padding: 16px 0; border-top: 1px solid var(--rule); text-decoration: none; color: inherit; }
+.gcard__t { display: block; font-size: 22px; line-height: 1.15; transition: color .2s var(--ease); }
+.gcard__y { display: block; font-size: 13px; color: var(--grey); margin-top: 6px; }
+.gcard img { width: 140px; height: 100px; object-fit: cover; display: block; }
+.gcard:hover .gcard__t { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
+.gcard:hover img { opacity: .85; }
+@media (max-width: 960px) { .gwrap { grid-template-columns: 1fr; } .ggrid { grid-template-columns: 1fr; } .gcats { position: static; } }
 </style>
 </head>
 <body>
@@ -275,16 +304,9 @@ button, input, select { font: inherit; color: inherit; }
     <input class="search" type="search" placeholder="Search events..." aria-label="Search events">
     <div class="bar__group">
       <span class="lbl" id="group-lbl">Display as</span>
-      <div class="seg" role="group" aria-labelledby="group-lbl">
-        <button class="seg__btn" type="button" data-mode="timeline" aria-pressed="true">Timeline</button>
-        <button class="seg__btn" type="button" data-mode="list" aria-pressed="false">List</button>
-      </div>
+      <select class="dd" id="display-as" aria-labelledby="group-lbl"><option value="timeline">Timeline</option><option value="grid">Grid</option></select>
     </div>
     <div class="bar__right">
-      <div class="bar__group">
-        <span class="lbl">Display</span>
-        <select class="dd" aria-label="Display"><option>All events</option><option>Main events</option><option>Key events</option></select>
-      </div>
       <button class="btn" id="open-filters" type="button" aria-controls="filters" aria-expanded="false">Open filters</button>
     </div>
   </div>
@@ -330,7 +352,7 @@ button, input, select { font: inherit; color: inherit; }
   /* Time scale matches the Figma axis: 1500–1900 compressed, 1900–2020 linear */
   var SPLIT = 0.088;
   function pos(y) { return y <= 1900 ? SPLIT * (y - 1500) / 400 : SPLIT + (1 - SPLIT) * (y - 1900) / 130; }
-  function pct(y) { return 'calc(300px + (100% - 300px) * ' + pos(y).toFixed(4) + ')'; }
+  function pct(y) { return (pos(y) * 100).toFixed(2) + '%'; }
 
   var IMG = { a: 'assets/web/hero-2.jpg', b: 'assets/web/madrid-1991.jpg', c: 'assets/web/unga-2006.jpg', d: 'assets/web/gaza-2012.jpg', e: 'assets/web/edward-said.jpg', f: 'assets/web/najati-sidqi.jpg', g: 'assets/web/naji-al-ali.jpg', h: 'assets/web/japan-poster.jpg' };
   var PLACEHOLDER_IMG = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fblocks.astratic.com%2Fimg%2Fgeneral-img-landscape.png&f=1&nofb=1&ipt=8a90092c86dce8fc3924cfac6646ae357773d3c65d2a0d20d7f5fbc27b544d88&ipo=images';
@@ -390,10 +412,14 @@ button, input, select { font: inherit; color: inherit; }
     if (mode === 'timeline') {
       list.innerHTML = themes.map(function (t) {
         var a = pos(t.from), b = pos(t.to);
-        return '<div class="tl"><div class="tl__lead"><span class="tl__thumb"><img src="' + PLACEHOLDER_IMG + '" alt=""></span>' +
-          '<span class="tl__y">' + h(t.years) + '</span><span class="tl__txt"><span class="tl__name">' + h(t.name) + '</span><span class="tl__cat">' + h(t.cat) + '</span></span></div>' +
-          '<div class="tl__track"><i style="left:' + (a * 100).toFixed(3) + '%;width:' + (Math.max(0.004, b - a) * 100).toFixed(3) + '%"></i></div></div>';
+        return '<div class="tl"><div class="tl__track"><i style="left:' + (a * 100).toFixed(3) + '%;width:' + (Math.max(0.004, b - a) * 100).toFixed(3) + '%"></i></div>' +
+          '<div class="tl__lead"><span class="tl__thumb"><img src="' + PLACEHOLDER_IMG + '" alt=""></span>' +
+          '<span class="tl__y">' + h(t.years) + '</span><span class="tl__txt"><span class="tl__name">' + h(t.name) + '</span><span class="tl__cat">' + h(t.cat) + '</span></span></div></div>';
       }).join('');
+      return;
+    }
+    if (mode === 'grid') {
+      list.innerHTML = gridView();
       return;
     }
     list.innerHTML = periods.map(function (p, i) {
@@ -439,12 +465,28 @@ button, input, select { font: inherit; color: inherit; }
     if (e) openEvent(e.getAttribute('data-event'), e);
   });
   var mode = 'timeline';
-  document.querySelectorAll('.seg__btn').forEach(function (b) {
-    b.addEventListener('click', function () {
-      mode = b.getAttribute('data-mode');
-      document.querySelectorAll('.seg__btn').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-      render();
-    });
+  var gridCat = 'Regional and International Politics and Diplomacy';
+  function gridView() {
+    var cats = [];
+    themes.forEach(function (t) { if (cats.indexOf(t.cat) < 0) cats.push(t.cat); });
+    var side = '<ul class="gcats">' + cats.map(function (c) {
+      return '<li><button class="gcat' + (c === gridCat ? ' is-on' : '') + '" type="button" data-cat="' + h(c) + '">' + h(c) + '</button></li>';
+    }).join('') + '<li><button class="gcat' + (gridCat ? '' : ' is-on') + '" type="button" data-cat="">All</button></li></ul>';
+    var cards = themes.filter(function (t) { return !gridCat || t.cat === gridCat; }).map(function (t) {
+      return '<a class="gcard" href="#"><span class="gcard__txt"><span class="gcard__t">' + h(t.name) + '</span><span class="gcard__y">' + h(t.years) + '</span></span>' +
+        '<img src="' + PLACEHOLDER_IMG + '" alt=""></a>';
+    }).join('');
+    return '<div class="gwrap">' + side + '<div class="ggrid">' + cards + '</div></div>';
+  }
+  $('#list').addEventListener('click', function (ev) {
+    var b = ev.target.closest('.gcat');
+    if (!b) return;
+    gridCat = b.getAttribute('data-cat') || null;
+    render();
+  });
+  document.getElementById('display-as').addEventListener('change', function (ev) {
+    mode = ev.target.value;
+    render();
   });
 
   /* ---------- Event panel ---------- */

@@ -68,8 +68,9 @@ button, input, select { font: inherit; color: inherit; }
 
 /* ---------- Periods ---------- */
 /* Periods: compact rows, title left-aligned, dates on hover, timeline as a thin strip under each title */
-.per__row { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 64px; padding: 0 0 6px; cursor: pointer; position: relative; transition: background-color .3s var(--ease); }
+.per__row { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 64px; padding: 0 0 2px; cursor: pointer; position: relative; transition: background-color .3s var(--ease); }
 .per__row:focus-visible { outline: 2px solid var(--hl); outline-offset: -2px; }
+.per__num { margin-right: 16px; }
 .per__name { font-size: 28px; line-height: 1; white-space: nowrap; position: relative; z-index: 1; }
 .per__dates { font-size: 16px; color: var(--grey); margin-left: 16px; opacity: 0; transform: translateX(-4px); display: inline-block; transition: opacity .3s var(--ease), transform .3s var(--ease); }
 .per__row:hover .per__dates, .per__row:focus-visible .per__dates { opacity: 1; transform: none; }
@@ -78,7 +79,9 @@ button, input, select { font: inherit; color: inherit; }
 .per__band i { position: absolute; top: 0; bottom: 0; background: var(--hl); transition: background-color .3s var(--ease); }
 .per__row:hover .per__band i { background: #3d9a78; }
 .per[data-open="true"] .per__row { background: var(--light); }
-.per[data-open="true"] .per__plus { transform: rotate(45deg); }
+.per__mi { display: none; }
+.per[data-open="true"] .per__pl { display: none; }
+.per[data-open="true"] .per__mi { display: inline; }
 .per__row:hover { background: var(--soft); }
 .per[data-open="true"] .per__row:hover { background: var(--light); }
 
@@ -139,16 +142,16 @@ button, input, select { font: inherit; color: inherit; }
 .fgroup .n { margin-left: auto; font-size: 12px; color: var(--grey); background: var(--soft); border-radius: 999px; padding: 1px 8px; }
 .fgroup .all { color: var(--ink); text-transform: uppercase; font-size: 14px; letter-spacing: .02em; border-bottom: 1px solid var(--rule); padding-bottom: 10px; margin-bottom: 4px; }
 .filters__act { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rule); }
-.evp__date { font-size: 14px; color: var(--grey); margin: 0 0 8px; }
-.evp h2 { font-family: var(--f-display); font-weight: 400; font-size: 32px; line-height: 1.15; margin: 0 0 24px; }
-.meta { margin: 0; border-top: 1px solid var(--rule); }
-.meta div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.evp__date { font-size: 17px; color: var(--grey); margin: 0; font-variant-numeric: tabular-nums; }
+.evp h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(32px, 4.4vw, 48px); line-height: 1.12; margin: 6px 0 0; text-wrap: balance; }
+.meta { margin: 36px 0 0; border-top: 1px solid var(--rule); }
+.meta div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 16px; line-height: 1.4; }
 .meta dt { color: var(--grey); }
 .meta dd { margin: 0; }
 .meta dd a { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--rule); transition: color .2s var(--ease); }
 .meta dd a:hover { color: var(--hl); text-decoration-color: var(--hl); }
-.evp__text { margin: 24px 0; }
-.evp__text p { margin: 0 0 12px; }
+.evp__text { margin: 32px 0 0; font-size: 17px; line-height: 1.55; max-width: 62ch; }
+.evp__text p { margin: 0 0 1em; }
 .evp h3 { font-size: 14px; font-weight: 400; color: var(--grey); margin: 28px 0 8px; }
 .rel { display: block; padding: 12px 0; border-top: 1px solid var(--rule); text-decoration: none; transition: color .2s var(--ease); }
 .rel:hover .rel__t, .evp__row:hover .evp__t, .evp__txt:hover .evp__t, .evp__place:hover .evp__t, .thm:hover .evp__t { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
@@ -161,8 +164,8 @@ button, input, select { font: inherit; color: inherit; }
 .rel__ic { color: var(--ink); display: block; }
 .rel__ic svg { display: block; }
 .evp__row, .evp__txt, .evp__place { display: grid; gap: 12px; padding: 12px 0; border-top: 1px solid var(--rule); align-items: start; }
-.evp__row { grid-template-columns: 56px minmax(0, 1fr); }
-.evp__row img { width: 56px; height: 56px; object-fit: cover; border-radius: 2px; display: block; }
+.evp__row { grid-template-columns: 64px minmax(0, 1fr); }
+.evp__row img { width: 64px; height: 64px; object-fit: cover; border-radius: 2px; display: block; }
 .evp__txt { grid-template-columns: 120px minmax(0, 1fr); }
 .evp__place { grid-template-columns: 80px minmax(0, 1fr); }
 .evp__y, .evp__cat { font-size: 14px; color: var(--grey); display: block; }
@@ -238,6 +241,15 @@ button, input, select { font: inherit; color: inherit; }
 .fgroup ul.sub[hidden] { display: none; }
 .filters__act { flex-shrink: 0; margin: 0 -28px; padding: 20px 28px 24px; display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--rule); background: var(--paper); }
 .filters__act .btn { height: auto; min-width: 0; padding: 14px 20px; font-size: 16px; border-radius: 4px; gap: 12px; }
+
+/* Open period header stays under the sticky bar until the period ends */
+.per[data-open="true"] .per__row { position: sticky; top: var(--stick, 160px); z-index: 5; }
+
+/* Event panel headings as on the live site: dark, 16px, with a rule underneath */
+.evp h3 { font-size: 16px; line-height: 20px; font-weight: 400; color: var(--ink); margin: 28px 0 0; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+#evp-related .rel:first-child, #evp-highlights .hl:first-child { border-top: 0; }
+.rel__d { font-size: 14px; line-height: 20px; }
+.rel__t { font-size: 16px; line-height: 20px; }
 </style>
 </head>
 <body>
@@ -303,7 +315,6 @@ button, input, select { font: inherit; color: inherit; }
     <figure class="evp__fig" id="evp-fig"></figure>
     <h3>Related Events</h3>
     <div id="evp-related"></div>
-    <div id="evp-thematic"></div>
     <h3>Related Highlights</h3>
     <div id="evp-highlights"></div>
     <div id="evp-extra"></div>
@@ -384,6 +395,7 @@ button, input, select { font: inherit; color: inherit; }
       '<span class="ev__d">' + h(e.date) + '</span>' +
       '<span class="ev__t">' + h(e.title) + '</span>' + thumb + '</button>';
   }
+  var ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII'];
   function render() {
     var list = $('#list');
     if (mode === 'events') {
@@ -395,8 +407,8 @@ button, input, select { font: inherit; color: inherit; }
       var a = pos(p.from), b = pos(p.to);
       return '<section class="per" data-i="' + i + '" data-open="false">' +
         '<button class="per__row" type="button" aria-expanded="false" aria-controls="p' + i + '">' +
-          '<span class="per__name">' + h(p.name) + '<span class="per__dates">' + p.from + '–' + p.to + '</span></span>' +
-          '<span class="per__plus" aria-hidden="true">+</span>' +
+          '<span class="per__name"><span class="per__num">' + ROMAN[i] + '</span>' + h(p.name) + '<span class="per__dates">' + p.from + '–' + p.to + '</span></span>' +
+          '<span class="per__plus" aria-hidden="true"><span class="per__pl">+</span><span class="per__mi">−</span></span>' +
           '<span class="per__band"><i style="left:' + (a * 100).toFixed(3) + '%;width:' + (Math.max(0.004, b - a) * 100).toFixed(3) + '%"></i></span>' +
         '</button>' +
         '<div class="per__body" id="p' + i + '" hidden>' +
@@ -449,20 +461,19 @@ button, input, select { font: inherit; color: inherit; }
     lastFocus = from || null;
     $('#evp-date').textContent = e.pe ? e.pd + ' — ' + e.pe : e.pd;
     $('#evp-title').textContent = e.title;
-    var meta = { Location: (e.meta && e.meta.Location) || 'Placeholder', Actors: 'Placeholder', Subjects: 'Placeholder' };
+    var meta = { Location: (e.meta && e.meta.Location) || 'Placeholder', Actors: 'Placeholder', Subject: 'Placeholder' };
     $('#evp-meta').innerHTML = Object.keys(meta).map(function (k) {
       return '<div><dt>' + h(k) + '</dt><dd>' + meta[k].split(', ').map(function (v) { return '<a href="#">' + h(v) + '</a>'; }).join(', ') + '</dd></div>';
     }).join('');
-    $('#evp-text').innerHTML = '<p>' + h(PLACE) + '</p><p>' + h(PLACE) + '</p>';
+    $('#evp-text').innerHTML = '<p>' + h(PLACE) + '</p>';
     $('#evp-fig').innerHTML = '<div><img src="' + (e.img || PLACEHOLDER_IMG) + '" alt=""></div><figcaption>Title. Caption that can long. Location name (YYYY).<span class="src">Source name. Author name</span></figcaption>';
     var rel = [];
-    if (e.prev && byId[e.prev]) rel.push({ icon: ICON_UP, ev: byId[e.prev] });
-    if (e.next && byId[e.next]) rel.push({ icon: ICON_DOWN, ev: byId[e.next] });
+    rel.push(e.prev && byId[e.prev] ? { icon: ICON_UP, ev: byId[e.prev] } : { icon: ICON_UP, ph: true });
+    rel.push(e.next && byId[e.next] ? { icon: ICON_DOWN, ev: byId[e.next] } : { icon: ICON_DOWN, ph: true });
     $('#evp-related').innerHTML = rel.map(function (r) {
+      if (r.ph) return '<a class="rel rel--ic" href="#"><span class="rel__ic">' + r.icon + '</span><span><span class="rel__d">Placeholder date</span><span class="rel__t">Placeholder related event title</span></span></a>';
       return '<a class="rel rel--ic" href="#" data-event="' + r.ev.id + '"><span class="rel__ic">' + r.icon + '</span><span><span class="rel__d">' + h(r.ev.pd) + '</span><span class="rel__t">' + h(r.ev.title) + '</span></span></a>';
     }).join('');
-    $('#evp-thematic').innerHTML = '<h3>Related Thematic Chronologies</h3>' +
-      '<a class="thm" href="#"><img src="' + PLACEHOLDER_IMG + '" alt=""><span class="evp__y">1915–1954</span><span class="evp__t">Placeholder thematic chronology title</span></a>';
     $('#evp-highlights').innerHTML = highlights.map(function (x) {
       return '<a class="hl" href="#"><img src="' + x.img + '" alt=""><span><span class="hl__t">' + h(x.t) + '</span><span class="hl__s">' + h(x.s) + '</span></span></a>';
     }).join('');
@@ -484,10 +495,15 @@ button, input, select { font: inherit; color: inherit; }
       '<h3>Related Texts</h3>' +
         txt('1897', 'Placeholder text title') + txt('1897', 'Placeholder text title') +
         txt('1923', 'Placeholder text title') + txt('1903', 'Placeholder text title') +
+      '<h3>Related Photographs</h3>' +
+        row(PLACEHOLDER_IMG, '1948', 'Placeholder photograph title') +
+        row(PLACEHOLDER_IMG, '1948', 'Placeholder photograph title') +
       '<h3>Related Maps</h3>' +
         row(PLACEHOLDER_IMG, '1943', 'Placeholder map title', 'Placeholder source') +
       '<h3>Related Illustrations</h3>' +
-        row(PLACEHOLDER_IMG, '1965', 'Placeholder illustration title', 'Author name');
+        row(PLACEHOLDER_IMG, '1965', 'Placeholder illustration title', 'Author name') +
+      '<h3>Related Charts</h3>' +
+        row(PLACEHOLDER_IMG, '1949 – 2017', 'Placeholder chart title');
     closeFilters();
     panel('#event', true);
   }
@@ -562,6 +578,13 @@ button, input, select { font: inherit; color: inherit; }
     if ($('#filters').classList.contains('is-open')) closeFilters();
   });
 
+  /* Height of the sticky nav and bar, so an open period header sticks right under them */
+  function setStick() {
+    var nav = document.querySelector('.nav'), bar = document.querySelector('.bar');
+    if (nav && bar) document.documentElement.style.setProperty('--stick', (nav.offsetHeight + bar.offsetHeight) + 'px');
+  }
+  setStick();
+  window.addEventListener('resize', setStick);
   render();
 })();
 </script>

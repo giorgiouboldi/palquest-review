@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overall Chronology | Interactive Encyclopedia of the Palestine Question</title>
+<style>
+@font-face { font-family: "Suisse Intl"; src: url("assets/fonts/SuisseIntl-Book.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Lyon Text"; src: url("assets/fonts/LyonArabicText-Regular-Web.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+:root {
+  color-scheme: light;
+  --paper: #ffffff; --ink: #06281e; --grey: #a8a39f; --rule: #dbdbdb;
+  --hl: #4ca487; --light: #c7d7cd; --soft: #e6f2ec;
+  --f-display: "Lyon Text", Georgia, "Times New Roman", serif;
+  --f-text: "Suisse Intl", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --hdr: 60px; --bar: 64px;
+  --edge: max(16px, calc((100% - 1296px) / 2));
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { font-synthesis: none; background: var(--paper); color: var(--ink); font-family: var(--f-text); font-size: 16px; line-height: 20px; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--hl); outline-offset: 2px; border-radius: 2px; }
+
+/* ---------- Sticky header and secondary bar (Figma: navbar 60px, secondary bar 64px) ---------- */
+.nav { position: sticky; top: 0; z-index: 30; height: var(--hdr); background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav__in { height: 100%; margin: 0 var(--edge); display: flex; align-items: center; gap: 16px; }
+.nav__logo img { height: 40px; width: auto; }
+.nav__sp { flex: 1; }
+.nav__btn { background: none; border: 0; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0; cursor: pointer; font-size: 16px; transition: color .2s var(--ease); }
+.nav__btn:hover { color: var(--hl); }
+.bar { position: sticky; top: var(--hdr); z-index: 20; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.bar__in { margin: 0 var(--edge); height: var(--bar); display: flex; align-items: center; gap: 24px; padding: 8px 0; }
+.bar__group { display: flex; align-items: center; gap: 8px; }
+.bar__right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.lbl { font-size: 14px; letter-spacing: -.02em; white-space: nowrap; }
+.search { width: 196px; height: 36px; border: 1px solid var(--rule); border-radius: 6px; padding: 0 16px; font-size: 14px; background: var(--paper); }
+.search::placeholder { color: var(--ink); opacity: .75; }
+.search:focus { outline: 2px solid var(--hl); outline-offset: 1px; border-color: transparent; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; padding: 2px; background: var(--paper); }
+.seg__btn { border: 0; background: none; height: 32px; padding: 0 14px; border-radius: 4px; font-size: 14px; letter-spacing: -.02em; cursor: pointer; transition: background-color .2s var(--ease), color .2s var(--ease); }
+.seg__btn:hover:not([aria-pressed="true"]) { background: var(--soft); }
+.seg__btn[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.dd { height: 36px; border: 0; border-radius: 6px; background: var(--ink); color: #fff; padding: 4px 32px 4px 16px; font-size: 14px; letter-spacing: -.02em; appearance: none; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, #fff 50%), linear-gradient(135deg, #fff 50%, transparent 50%); background-position: calc(100% - 17px) 17px, calc(100% - 12px) 17px; background-size: 5px 5px; background-repeat: no-repeat; transition: background-color .2s var(--ease); }
+.dd:hover { background-color: #0d3d2e; }
+.btn { height: 36px; border: 0; border-radius: 6px; background: var(--ink); color: #fff; padding: 0 16px; font-size: 14px; letter-spacing: -.02em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background-color .2s var(--ease); }
+.btn:hover { background: var(--hl); }
+.btn--ghost { background: var(--paper); color: var(--ink); border: 1px solid var(--rule); }
+.btn--ghost:hover { background: var(--soft); color: var(--ink); }
+
+/* Years axis (Figma: 12px labels, thin tick line) */
+.axis { margin: 0 var(--edge); position: relative; height: 32px; border-bottom: 1px solid var(--rule); font-size: 12px; }
+.axis__lbl { position: absolute; bottom: 8px; transform: translateX(-50%); white-space: nowrap; font-feature-settings: "lnum" 1, "tnum" 1; }
+.axis__tick { position: absolute; bottom: 0; width: 1px; height: 5px; background: var(--ink); }
+
+/* ---------- Page head ---------- */
+.head { margin: 0; padding: 40px var(--edge) 64px; display: grid; grid-template-columns: 5fr 7fr; column-gap: 24px; align-items: start; border-bottom: 1px solid var(--rule); }
+.head .crumb { grid-column: 1 / -1; }
+.crumb { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--grey); margin: 0 0 12px; }
+.crumb a { text-decoration: none; transition: color .2s var(--ease); }
+.crumb a:hover { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
+.head h1 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(40px, 3.8vw, 56px); line-height: 1; letter-spacing: -.01em; }
+.head .lede { margin: 0; font-size: 14px; line-height: 1.4; color: var(--ink); }
+
+/* ---------- Periods ---------- */
+/* Periods: compact rows, title left-aligned, dates on hover, timeline as a thin strip under each title */
+.per__row { all: unset; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 64px; padding: 0 0 6px; cursor: pointer; position: relative; transition: background-color .3s var(--ease); }
+.per__row:focus-visible { outline: 2px solid var(--hl); outline-offset: -2px; }
+.per__name { font-size: 28px; line-height: 1; white-space: nowrap; position: relative; z-index: 1; }
+.per__dates { font-size: 16px; color: var(--grey); margin-left: 16px; opacity: 0; transform: translateX(-4px); display: inline-block; transition: opacity .3s var(--ease), transform .3s var(--ease); }
+.per__row:hover .per__dates, .per__row:focus-visible .per__dates { opacity: 1; transform: none; }
+.per__plus { font-size: 24px; line-height: 1; padding-right: 16px; transition: transform .35s var(--ease); }
+.per__band { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; pointer-events: none; }
+.per__band i { position: absolute; top: 0; bottom: 0; background: var(--hl); transition: background-color .3s var(--ease); }
+.per__row:hover .per__band i { background: #3d9a78; }
+.per[data-open="true"] .per__row { background: var(--light); }
+.per[data-open="true"] .per__plus { transform: rotate(45deg); }
+.per__row:hover { background: var(--soft); }
+.per[data-open="true"] .per__row:hover { background: var(--light); }
+
+.list { margin: 0 var(--edge); padding-bottom: 80px; }
+.per { border-bottom: 1px solid var(--rule); }
+.per__body { padding: 16px 0 24px; display: grid; grid-template-columns: minmax(0, 1fr) 506px; gap: 40px 140px; }
+.per__body[hidden] { display: none; }
+.per__text { padding-left: 0; }
+.per__text p { margin: 0 0 20px; font-size: 18px; line-height: 20px; }
+.per__read { display: inline-flex; align-items: center; height: 38px; padding: 4px 16px; border-radius: 6px; background: var(--ink); color: #fff; text-decoration: none; font-size: 16px; letter-spacing: -.02em; transition: background-color .2s var(--ease); }
+.per__read:hover { background: var(--hl); }
+.per__fig { margin: 0; }
+.per__fig .frame { overflow: hidden; border-radius: 2px; aspect-ratio: 506 / 294; background: var(--soft); }
+.per__fig img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.per__fig:hover img { transform: scale(1.04); }
+.per__fig figcaption { font-size: 13px; line-height: 14px; margin-top: 8px; }
+.per__fig figcaption .src { color: var(--grey); display: block; }
+.per__events { grid-column: 1 / -1; }
+
+/* ---------- Event rows (Figma: date 196px, title 856px, thumbnail 37px) ---------- */
+.ev { all: unset; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 196px minmax(0, 1fr) 37px; column-gap: 24px; align-items: center; width: 100%; min-height: 40px; padding: 8px 0; border-top: 1px solid var(--rule); cursor: pointer; overflow: hidden; transition: background-color .25s var(--ease); }
+.ev:focus-visible { outline: 2px solid var(--hl); outline-offset: -2px; }
+.ev:hover { background: var(--soft); }
+.ev__d { font-size: 16px; line-height: 20px; color: var(--grey); white-space: nowrap; transition: color .25s var(--ease); }
+.ev__t { font-size: 16px; line-height: 20px; position: relative; z-index: 1; transition: transform .35s var(--ease), color .3s var(--ease); }
+.ev__t::after { content: "→"; margin-left: 8px; color: var(--hl); opacity: 0; display: inline-block; transform: translateX(-6px); transition: opacity .3s var(--ease), transform .3s var(--ease); }
+.ev--main .ev__t { font-size: 24px; line-height: 1.1; }
+.ev--xl .ev__t { font-size: 32px; line-height: 1.1; }
+.ev:hover .ev__t { transform: translateX(6px); color: var(--hl); }
+.ev:hover .ev__t::after { opacity: 1; transform: none; }
+.ev:hover .ev__d { color: var(--ink); }
+.ev__mark { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--hl); pointer-events: none; transition: width .3s var(--ease), background-color .3s var(--ease); }
+.ev:hover .ev__mark { width: 3px; background: #3d9a78; }
+.ev__thumb { width: 37px; height: 37px; border-radius: 2px; overflow: hidden; background: var(--soft); position: relative; z-index: 1; }
+.ev__thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+.ev:hover .ev__thumb img { transform: scale(1.08); }
+
+/* ---------- Side panels ---------- */
+.panel { position: fixed; top: 0; right: 0; height: 100dvh; width: min(560px, 100%); background: var(--paper); z-index: 60; box-shadow: -16px 0 36px rgba(6, 40, 30, .12); transform: translateX(100%); transition: transform .4s var(--ease); overflow: auto; overscroll-behavior: contain; visibility: hidden; }
+.panel.is-open { transform: none; visibility: visible; }
+.panel__in { padding: 28px 40px 40px; }
+.panel__top { display: flex; justify-content: flex-end; }
+.panel__close { background: none; border: 0; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px 0; transition: color .2s var(--ease); }
+.panel__close:hover { color: var(--hl); }
+.filters h2 { font-weight: 400; font-size: 32px; line-height: 1.1; margin: 0 0 24px; }
+.filters { width: min(1200px, calc(100% - 40px)); top: 27px; right: 20px; height: calc(100dvh - 54px); }
+.filters .panel__in { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; padding: 24px 32px 32px; }
+.filters h2 { font-size: 40px; }
+.filters__grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr; gap: 0; flex: 1; min-height: 0; overflow: auto; margin-top: 24px; }
+.filters__grid > .fgroup { padding: 0 24px; border-left: 1px solid var(--rule); }
+.filters__grid > .fgroup:first-child { padding-left: 0; border-left: 0; }
+.fgroup ul.sub { padding-left: 24px; }
+.fgroup h3 { font-size: 24px; font-weight: 400; color: var(--ink); margin: 0 0 12px; }
+.fgroup ul { list-style: none; margin: 0; padding: 0; }
+.fgroup label { display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; font-size: 14px; transition: color .2s var(--ease); }
+.fgroup label:hover { color: var(--hl); }
+.fgroup input { accent-color: var(--ink); width: 15px; height: 15px; margin: 0; }
+.fgroup .n { margin-left: auto; font-size: 12px; color: var(--grey); background: var(--soft); border-radius: 999px; padding: 1px 8px; }
+.fgroup .all { color: var(--ink); text-transform: uppercase; font-size: 14px; letter-spacing: .02em; border-bottom: 1px solid var(--rule); padding-bottom: 10px; margin-bottom: 4px; }
+.filters__act { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.evp__date { font-size: 14px; color: var(--grey); margin: 0 0 8px; }
+.evp h2 { font-family: var(--f-display); font-weight: 400; font-size: 32px; line-height: 1.15; margin: 0 0 24px; }
+.meta { margin: 0; border-top: 1px solid var(--rule); }
+.meta div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.meta dt { color: var(--grey); }
+.meta dd { margin: 0; }
+.meta dd a { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--rule); transition: color .2s var(--ease); }
+.meta dd a:hover { color: var(--hl); text-decoration-color: var(--hl); }
+.evp__text { margin: 24px 0; }
+.evp__text p { margin: 0 0 12px; }
+.evp h3 { font-size: 14px; font-weight: 400; color: var(--grey); margin: 28px 0 8px; }
+.rel { display: block; padding: 12px 0; border-top: 1px solid var(--rule); text-decoration: none; transition: color .2s var(--ease); }
+.rel:hover .rel__t, .evp__row:hover .evp__t, .evp__txt:hover .evp__t, .evp__place:hover .evp__t, .thm:hover .evp__t { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
+.evp__row:hover img, .thm:hover img { opacity: .85; }
+.evp__row img, .thm img { transition: opacity .3s var(--ease); }
+.evp__row, .evp__txt, .evp__place, .thm { color: inherit; text-decoration: none; cursor: pointer; }
+.evp__t { transition: color .2s var(--ease); }
+.rel__d { display: block; font-size: 14px; color: var(--grey); }
+.rel--ic { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 8px; align-items: center; }
+.rel__ic { color: var(--ink); display: block; }
+.rel__ic svg { display: block; }
+.evp__row, .evp__txt, .evp__place { display: grid; gap: 12px; padding: 12px 0; border-top: 1px solid var(--rule); align-items: start; }
+.evp__row { grid-template-columns: 56px minmax(0, 1fr); }
+.evp__row img { width: 56px; height: 56px; object-fit: cover; border-radius: 2px; display: block; }
+.evp__txt { grid-template-columns: 120px minmax(0, 1fr); }
+.evp__place { grid-template-columns: 80px minmax(0, 1fr); }
+.evp__y, .evp__cat { font-size: 14px; color: var(--grey); display: block; }
+.evp__cat { font-size: 12px; text-transform: uppercase; letter-spacing: .02em; padding-top: 2px; }
+.evp__t { font-size: 14px; display: block; }
+.evp__sub { font-size: 14px; color: var(--grey); display: block; margin-top: 4px; }
+.thm { display: block; max-width: 352px; text-decoration: none; padding: 12px 0; }
+.thm img { width: 100%; aspect-ratio: 5 / 3; object-fit: cover; display: block; margin-bottom: 8px; }
+.thm .evp__y { margin-bottom: 2px; }
+.hl { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid var(--rule); text-decoration: none; }
+.hl img { width: 96px; height: 64px; object-fit: cover; border-radius: 2px; transition: transform .5s var(--ease); }
+.hl:hover img { transform: scale(1.04); }
+.hl:hover .hl__t { color: var(--hl); }
+.hl__t { transition: color .2s var(--ease); }
+.hl__s { display: block; font-size: 14px; color: var(--grey); margin-top: 4px; }
+.evp__fig { display: grid; grid-template-columns: 289px minmax(0, 1fr); gap: 24px; margin: 24px 0; }
+.evp__fig img { width: 289px; height: 288px; object-fit: cover; border-radius: 2px; display: block; }
+.evp__fig figcaption { font-size: 14px; line-height: 1.4; align-self: start; }
+.evp__fig figcaption .src { color: var(--grey); display: block; margin-top: 8px; }
+.evp__ph { display: block; padding: 12px 0; border-top: 1px solid var(--rule); font-size: 14px; color: var(--grey); }
+.evp__thumbs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.evp__thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 2px; }
+
+.note { margin: 0 var(--edge); padding: 0 0 40px; font-size: 13px; color: var(--grey); }
+
+/* ---------- Mobile (Figma has no mobile frame here; stacked as on the other pages) ---------- */
+@media (max-width: 960px) {
+  :root { --hdr: 56px; --bar: auto; --edge: 16px; }
+  .nav__logo img { content: url("assets/web/logo-mobile-dark.png"); height: 30px; }
+  .bar__in { flex-wrap: wrap; height: auto; gap: 8px; padding: 10px 0; }
+  .search { width: 100%; }
+  .bar__right { margin-left: 0; width: 100%; flex-wrap: wrap; }
+  .axis { display: none; }
+  .per__row { height: auto; min-height: 56px; }
+  .per__dates { opacity: 1; transform: none; font-size: 14px; }
+  .per__name { font-size: 24px; white-space: normal; }
+  .per__band { display: none; }
+  .per__text { padding-left: 0; }
+  .per__body { grid-template-columns: 1fr; gap: 20px; }
+  .ev { grid-template-columns: minmax(0, 1fr) 37px; row-gap: 4px; }
+  .ev__d { grid-column: 1 / -1; font-size: 13px; }
+  .ev__mark { display: none; }
+  .ev__t { font-size: 16px; }
+  .ev--main .ev__t, .ev--xl .ev__t { font-size: 22px; }
+  .head { grid-template-columns: 1fr; row-gap: 24px; padding-top: 36px; }
+  .head h1 { font-size: 32px; }
+  .filters__grid { grid-template-columns: 1fr; }
+  .filters__grid > .fgroup { padding: 0; border-left: 0; }
+  .panel__in { padding: 22px 20px 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* Filters: full-height panel, four columns, dropdowns, footer pinned to the bottom */
+.filters { top: 0; right: 0; height: 100dvh; width: min(1280px, 100%); }
+.filters .panel__in { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; padding: 24px 28px 0; }
+.filters h2 { font-size: 40px; line-height: 1.1; margin: 8px 0 28px; }
+.filters__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; flex: 1; min-height: 0; overflow: auto; }
+.filters__grid > .fgroup { padding: 0 20px; border-left: 1px solid var(--rule); }
+.filters__grid > .fgroup:first-child { padding-left: 0; border-left: 0; }
+.fgroup h3 { font-size: 24px; font-weight: 400; color: var(--ink); margin: 0 0 16px; }
+.fgroup ul { margin: 0; }
+.fgroup .all { text-transform: uppercase; font-size: 14px; letter-spacing: .02em; border-bottom: 1px solid var(--rule); padding: 0 0 12px; margin-bottom: 8px; }
+.fgroup li > .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fgroup li > .row label { flex: 1; min-width: 0; }
+.fgroup .tail { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.fgroup .n { font-size: 14px; }
+.fgroup .chev { width: 24px; height: 24px; border: 0; background: none; cursor: pointer; padding: 0; position: relative; }
+.fgroup .chev::before { content: ""; position: absolute; left: 6px; top: 6px; width: 8px; height: 8px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: rotate(45deg); transition: transform .2s var(--ease); }
+.fgroup .chev.is-open::before { transform: rotate(-135deg); top: 10px; }
+.fgroup ul.sub { padding-left: 24px; margin-top: 4px; }
+.fgroup ul.sub[hidden] { display: none; }
+.filters__act { flex-shrink: 0; margin: 0 -28px; padding: 20px 28px 24px; display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--rule); background: var(--paper); }
+.filters__act .btn { min-width: 200px; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav__in">
+    <a class="nav__logo" href="chronologies.html" aria-label="Chronologies"><img src="assets/web/logo-2l-dark.svg" alt=""></a>
+    <div class="nav__sp"></div>
+    <button class="nav__btn" type="button">English <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M5 8h14l-7 8z"/></svg></button>
+    <button class="nav__btn" type="button" aria-label="Open menu"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+
+  <section class="head">
+    <p class="crumb"><a href="chronologies.html">← Chronologies</a><span aria-hidden="true">/</span><span>Overall Chronology</span></p>
+    <h1>Overall Chronology</h1>
+    <p class="lede">The backbone of our encyclopedia: a detailed chronology of the major events that have shaped Palestinian history in the areas of war, diplomacy, culture, economics, and many other topics. Some of these events are part of “thematic timelines,” giving you one-click access to milestones in the history of the Palestine Liberation Organization, key United Nations resolutions, the various phases of the Arab-Israeli wars and rounds of negotiations, and many other pivotal developments in Palestinian history.</p>
+  </section>
+<div class="bar">
+  <div class="bar__in">
+    <input class="search" type="search" placeholder="Search events..." aria-label="Search events">
+    <div class="bar__group">
+      <span class="lbl" id="group-lbl">Group by</span>
+      <div class="seg" role="group" aria-labelledby="group-lbl">
+        <button class="seg__btn" type="button" data-mode="periods" aria-pressed="true">Periods</button>
+        <button class="seg__btn" type="button" data-mode="events" aria-pressed="false">Events</button>
+      </div>
+    </div>
+    <div class="bar__right">
+      <div class="bar__group">
+        <span class="lbl">Display</span>
+        <select class="dd" aria-label="Display"><option>All events</option><option>Main events</option><option>Key events</option></select>
+      </div>
+      <button class="btn" id="open-filters" type="button" aria-controls="filters" aria-expanded="false">Open filters</button>
+    </div>
+  </div>
+  <div class="axis" id="axis" aria-hidden="true"></div>
+</div>
+
+<main>
+  <div class="list" id="list"></div>
+</main>
+
+<aside class="panel filters" id="filters" aria-label="Filter events" aria-hidden="true">
+  <div class="panel__in">
+    <div class="panel__top"><button class="panel__close" type="button" data-close>Close filters</button></div>
+    <h2>Filter Events</h2>
+    <div class="filters__grid" id="filter-groups"></div>
+    <div class="filters__act">
+      <button class="btn" type="button" data-close>Apply Filters</button>
+      <button class="btn btn--ghost" type="button" id="reset-filters">Reset Filters</button>
+    </div>
+  </div>
+</aside>
+
+<aside class="panel evp" id="event" aria-label="Event" aria-hidden="true">
+  <div class="panel__in">
+    <div class="panel__top"><button class="panel__close" type="button" data-close>Close</button></div>
+    <p class="evp__date" id="evp-date"></p>
+    <h2 id="evp-title"></h2>
+    <dl class="meta" id="evp-meta"></dl>
+    <div class="evp__text" id="evp-text"></div>
+    <figure class="evp__fig" id="evp-fig"></figure>
+    <h3>Related Events</h3>
+    <div id="evp-related"></div>
+    <div id="evp-thematic"></div>
+    <h3>Related Highlights</h3>
+    <div id="evp-highlights"></div>
+    <div id="evp-extra"></div>
+  </div>
+</aside>
+
+<script src="assets/web/overall-events.js"></script>
+<script>
+(function () {
+  /* Time scale matches the Figma axis: 1500–1900 compressed, 1900–2020 linear */
+  var SPLIT = 0.088;
+  function pos(y) { return y <= 1900 ? SPLIT * (y - 1500) / 400 : SPLIT + (1 - SPLIT) * (y - 1900) / 130; }
+  function pct(y) { return (pos(y) * 100).toFixed(2) + '%'; }
+
+  var IMG = { a: 'assets/web/hero-2.jpg', b: 'assets/web/madrid-1991.jpg', c: 'assets/web/unga-2006.jpg', d: 'assets/web/gaza-2012.jpg', e: 'assets/web/edward-said.jpg', f: 'assets/web/najati-sidqi.jpg', g: 'assets/web/naji-al-ali.jpg', h: 'assets/web/japan-poster.jpg' };
+  var PLACEHOLDER_IMG = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fblocks.astratic.com%2Fimg%2Fgeneral-img-landscape.png&f=1&nofb=1&ipt=8a90092c86dce8fc3924cfac6646ae357773d3c65d2a0d20d7f5fbc27b544d88&ipo=images';
+  var PLACE = 'Placeholder text for this event. The final description, actors and related items come from the chronology data.';
+
+
+  var periods = [
+    { name: 'Ottoman Rule', from: 1516, to: 1916, img: 'assets/web/periods/period-1.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'For four centuries, the Levant is part of the Ottoman Empire and Palestine is occasionally the site of regional and international conflicts. Placeholder text.' },
+    { name: 'British Occupation and Early Mandate', from: 1917, to: 1936, img: 'assets/web/periods/period-2.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Late Mandate', from: 1936, to: 1948, img: 'assets/web/periods/period-3.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'The Palestine War and the Nakba', from: 1948, to: 1951, img: 'assets/web/periods/period-4.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Reverberations of the Palestine War', from: 1951, to: 1968, img: 'assets/web/periods/period-5.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Rise of the Palestinian National Movement', from: 1968, to: 1975, img: 'assets/web/periods/period-6.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'After 1973 War: Separate Peace and Civil War', from: 1975, to: 1985, img: 'assets/web/periods/period-7.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Palestinian Defeat, Divisions and Survival', from: 1985, to: 1990, img: 'assets/web/periods/period-8.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'First Intifada and Israeli-Palestinian Negotiations', from: 1990, to: 1996, img: 'assets/web/periods/period-9.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Oslo Process: Towards Failure', from: 1996, to: 2003, img: 'assets/web/periods/period-10.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Second Intifada and the Post-Arafat Era', from: 2003, to: 2010, img: 'assets/web/periods/period-11.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'Gaza Strip Separated and Assaulted', from: 2010, to: 2020, img: 'assets/web/periods/period-12.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+    { name: 'A Growingly Intractable Deadlock', from: 2020, to: 2023, img: 'assets/web/periods/period-13.jpg', cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this period. The final description comes from the chronology data.' },
+  ];
+
+  var filterGroups = [
+    { title: 'Subject', items: [['Biographical', 278], ['Colonization', 191], ['Contextual', 36], ['Cultural', 22], ['Diplomatic', 858], ['Institutional', 447], ['Legal', 289], ['Policy-Program', 523], ['Popular action', 240], ['Sanctions', 238], ['Social-Economic', 121], ['Violence', 829]] },
+    { title: 'Location', items: [['Palestine - Israel', 1505, 1], ['Frontline Region', 457, 1], ['Europe', 216, 1], ['North America', 179, 1], ['MENA Region', 156, 1], ['Asia-Pacific', 8, 1], ['Sub-Saharan Africa', 4, 1], ['Latin America & Caribbean', 2, 1]] },
+    { title: 'Actor', items: [['Palestine - Israel', 1837, 1], ['North America', 349, 1], ['Frontline Region', 342, 1], ['Europe', 296, 1], ['International/Multilateral Organizations', 281, 1], ['MENA Region', 235, 1], ['Asia-Pacific', 11, 1], ['Other', 4, 1], ['Latin America & Caribbean', 2, 1], ['Sub-Saharan Africa', 2, 1]] },
+    { title: 'Actor Type', items: [['Governmental', 1895], ['Inter-Governmental', 380], ['Non-Governmental', 630], ['Quasi-Governmental', 463]] }
+  ];
+  var related = [
+    { d: '20 May 1604', t: 'A Religious Component Related to Jerusalem and Other Elements Are Added to a Capitulation Granted to France' },
+    { d: '1605', t: 'Greek Orthodox Backlash against Provision on Jerusalem’s Holy Sites in Capitulation of 1604' }
+  ];
+  var highlights = [
+    { t: 'France and the Palestine Question Before 1948', s: 'Competition with the British, North African Considerations, Lukewarm Support for Zionism', img: PLACEHOLDER_IMG }
+  ];
+
+  var byId = {};
+  events.forEach(function (x) { byId[x.id] = x; });
+  var ICON_UP = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="11"/><path d="M12 17V7M7.5 11.5 12 7l4.5 4.5"/></svg>';
+  var ICON_DOWN = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="11"/><path d="M12 7v10M7.5 12.5 12 17l4.5-4.5"/></svg>';
+
+  document.getElementById('event').addEventListener('click', function (ev) {
+    var a = ev.target.closest('[data-event]');
+    if (!a) return;
+    ev.preventDefault();
+    openEvent(a.getAttribute('data-event'));
+  });
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ---------- Axis ---------- */
+  var axis = $('#axis');
+  [1500, 1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020, 2030].forEach(function (y) {
+    var t = document.createElement('div'); t.className = 'axis__tick'; t.style.left = pct(y); axis.appendChild(t);
+    var l = document.createElement('div'); l.className = 'axis__lbl'; l.style.left = pct(y); l.textContent = y; axis.appendChild(l);
+  });
+
+  /* ---------- Rendering ---------- */
+  function eventRow(e) {
+    var cls = 'ev' + (e.cls === 'main' ? ' ev--main' : e.cls === 'xl' ? ' ev--xl' : '');
+    var thumb = e.img ? '<span class="ev__thumb"><img src="' + e.img + '" alt=""></span>' : '<span></span>';
+    return '<button class="' + cls + '" type="button" data-event="' + e.id + '">' +
+      '<span class="ev__mark" style="left:calc(220px + (100% - 281px) * ' + pos(e.y).toFixed(4) + ')"></span>' +
+      '<span class="ev__d">' + h(e.date) + '</span>' +
+      '<span class="ev__t">' + h(e.title) + '</span>' + thumb + '</button>';
+  }
+  function render() {
+    var list = $('#list');
+    if (mode === 'events') {
+      list.innerHTML = '<div>' + events.slice().sort(function (a, b) { return a.y - b.y; }).map(eventRow).join('') + '</div>';
+      return;
+    }
+    list.innerHTML = periods.map(function (p, i) {
+      var evs = events.filter(function (e) { return e.period === i; }).sort(function (a, b) { return a.y - b.y; });
+      var a = pos(p.from), b = pos(p.to);
+      return '<section class="per" data-i="' + i + '" data-open="false">' +
+        '<button class="per__row" type="button" aria-expanded="false" aria-controls="p' + i + '">' +
+          '<span class="per__name">' + h(p.name) + '<span class="per__dates">' + p.from + '–' + p.to + '</span></span>' +
+          '<span class="per__plus" aria-hidden="true">+</span>' +
+          '<span class="per__band"><i style="left:' + (a * 100).toFixed(3) + '%;width:' + (Math.max(0.004, b - a) * 100).toFixed(3) + '%"></i></span>' +
+        '</button>' +
+        '<div class="per__body" id="p' + i + '" hidden>' +
+          '<div class="per__text"><p>' + h(p.desc) + '</p><a class="per__read" href="#">Read more</a></div>' +
+          '<figure class="per__fig"><div class="frame"><img src="' + p.img + '" alt=""></div><figcaption>' + h(p.cap) + '<span class="src">' + h(p.src) + '</span></figcaption></figure>' +
+          '<div class="per__events">' + evs.map(eventRow).join('') + '</div>' +
+        '</div></section>';
+    }).join('');
+  }
+  $('#list').addEventListener('click', function (ev) {
+    var row = ev.target.closest('.per__row');
+    if (row) {
+      var sec = row.parentElement;
+      var open = sec.getAttribute('data-open') !== 'true';
+      document.querySelectorAll('.per').forEach(function (x) {
+        if (x !== sec) {
+          x.setAttribute('data-open', 'false');
+          x.querySelector('.per__row').setAttribute('aria-expanded', 'false');
+          x.querySelector('.per__body').hidden = true;
+        }
+      });
+      sec.setAttribute('data-open', String(open));
+      row.setAttribute('aria-expanded', String(open));
+      sec.querySelector('.per__body').hidden = !open;
+      if (open) {
+        var offset = document.querySelector('.nav').offsetHeight + document.querySelector('.bar').offsetHeight + 12;
+        var top = sec.getBoundingClientRect().top + window.scrollY - offset;
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
+      }
+      return;
+    }
+    var e = ev.target.closest('.ev');
+    if (e) openEvent(e.getAttribute('data-event'), e);
+  });
+  var mode = 'periods';
+  document.querySelectorAll('.seg__btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      mode = b.getAttribute('data-mode');
+      document.querySelectorAll('.seg__btn').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      render();
+    });
+  });
+
+  /* ---------- Event panel ---------- */
+  var lastFocus = null;
+  function openEvent(id, from) {
+    var e = events.filter(function (x) { return x.id === id; })[0];
+    if (!e) return;
+    lastFocus = from || null;
+    $('#evp-date').textContent = e.pe ? e.pd + ' — ' + e.pe : e.pd;
+    $('#evp-title').textContent = e.title;
+    var meta = { Location: (e.meta && e.meta.Location) || 'Placeholder', Actors: 'Placeholder', Subjects: 'Placeholder' };
+    $('#evp-meta').innerHTML = Object.keys(meta).map(function (k) {
+      return '<div><dt>' + h(k) + '</dt><dd>' + meta[k].split(', ').map(function (v) { return '<a href="#">' + h(v) + '</a>'; }).join(', ') + '</dd></div>';
+    }).join('');
+    $('#evp-text').innerHTML = '<p>' + h(PLACE) + '</p><p>' + h(PLACE) + '</p>';
+    $('#evp-fig').innerHTML = '<div><img src="' + (e.img || PLACEHOLDER_IMG) + '" alt=""></div><figcaption>Title. Caption that can long. Location name (YYYY).<span class="src">Source name. Author name</span></figcaption>';
+    var rel = [];
+    if (e.prev && byId[e.prev]) rel.push({ icon: ICON_UP, ev: byId[e.prev] });
+    if (e.next && byId[e.next]) rel.push({ icon: ICON_DOWN, ev: byId[e.next] });
+    $('#evp-related').innerHTML = rel.map(function (r) {
+      return '<a class="rel rel--ic" href="#" data-event="' + r.ev.id + '"><span class="rel__ic">' + r.icon + '</span><span><span class="rel__d">' + h(r.ev.pd) + '</span><span class="rel__t">' + h(r.ev.title) + '</span></span></a>';
+    }).join('');
+    $('#evp-thematic').innerHTML = '<h3>Related Thematic Chronologies</h3>' +
+      '<a class="thm" href="#"><img src="' + PLACEHOLDER_IMG + '" alt=""><span class="evp__y">1915–1954</span><span class="evp__t">Placeholder thematic chronology title</span></a>';
+    $('#evp-highlights').innerHTML = highlights.map(function (x) {
+      return '<a class="hl" href="#"><img src="' + x.img + '" alt=""><span><span class="hl__t">' + h(x.t) + '</span><span class="hl__s">' + h(x.s) + '</span></span></a>';
+    }).join('');
+    var row = function (img, year, title, sub) {
+      return '<a class="evp__row" href="#">' + (img ? '<img src="' + img + '" alt="">' : '<span></span>') +
+        '<span>' + (year ? '<span class="evp__y">' + h(year) + '</span>' : '') + '<span class="evp__t">' + h(title) + '</span>' +
+        (sub ? '<span class="evp__sub">' + h(sub) + '</span>' : '') + '</span></a>';
+    };
+    var txt = function (year, title) {
+      return '<a class="evp__txt" href="#"><span class="evp__y">' + h(year) + '</span><span class="evp__t">' + h(title) + '</span></a>';
+    };
+    var place = function (cat, name, where) {
+      return '<a class="evp__place" href="#"><span class="evp__cat">' + h(cat) + '</span><span><span class="evp__t">' + h(name) + '</span><span class="evp__sub">' + h(where) + '</span></span></a>';
+    };
+    $('#evp-extra').innerHTML =
+      '<h3>Related Places</h3>' +
+        place('Village', 'Placeholder place', 'Placeholder region') +
+        place('Camp', 'Placeholder place', 'Placeholder region') +
+      '<h3>Related Texts</h3>' +
+        txt('1897', 'Placeholder text title') + txt('1897', 'Placeholder text title') +
+        txt('1923', 'Placeholder text title') + txt('1903', 'Placeholder text title') +
+      '<h3>Related Maps</h3>' +
+        row(PLACEHOLDER_IMG, '1943', 'Placeholder map title', 'Placeholder source') +
+      '<h3>Related Illustrations</h3>' +
+        row(PLACEHOLDER_IMG, '1965', 'Placeholder illustration title', 'Author name');
+    closeFilters();
+    panel('#event', true);
+  }
+
+  /* ---------- Filters ---------- */
+  function box(name, count) {
+    return '<label><input type="checkbox"> ' + h(name) + '</label>';
+  }
+  function tail(count, kids) {
+    return '<span class="tail">' + (count != null ? '<span class="n">' + count + '</span>' : '') +
+      (kids ? '<button class="chev" type="button" aria-expanded="false" aria-label="Show sub-items"></button>' : '') + '</span>';
+  }
+  $('#filter-groups').innerHTML = filterGroups.map(function (g) {
+    return '<div class="fgroup"><h3>' + h(g.title) + '</h3><ul>' +
+      '<li><label class="all"><input type="checkbox" data-all> Select all</label></li>' +
+      g.items.map(function (it) {
+        var kids = it[2] ? '<ul class="sub" hidden>' + [1, 2, 3].map(function (k) {
+          return '<li><div class="row">' + box('Placeholder sub-item ' + k) + tail(10, false) + '</div></li>';
+        }).join('') + '</ul>' : '';
+        return '<li><div class="row">' + box(it[0]) + tail(it[1], !!it[2]) + '</div>' + kids + '</li>';
+      }).join('') +
+      '</ul></div>';
+  }).join('');
+  $('#filter-groups').addEventListener('click', function (ev) {
+    var c = ev.target.closest('.chev');
+    if (!c) return;
+    var li = c.closest('li');
+    var sub = li.querySelector(':scope > ul.sub');
+    var open = sub.hidden;
+    sub.hidden = !open;
+    c.setAttribute('aria-expanded', String(open));
+    c.classList.toggle('is-open', open);
+  });
+  $('#filter-groups').addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t.hasAttribute('data-all')) {
+      t.closest('.fgroup').querySelectorAll('input:not([data-all])').forEach(function (b) { b.checked = t.checked; });
+      return;
+    }
+    var li = t.closest('li');
+    if (li) li.querySelectorAll(':scope > ul.sub input').forEach(function (b) { b.checked = t.checked; });
+  });
+  $('#reset-filters').addEventListener('click', function () {
+    document.querySelectorAll('#filters input').forEach(function (b) { b.checked = false; });
+  });
+
+  /* ---------- Panels: open, close on outside click, Close button, Escape ---------- */
+  function panel(sel, open) {
+    var p = $(sel);
+    p.classList.toggle('is-open', open);
+    p.setAttribute('aria-hidden', String(!open));
+  }
+  function closeFilters() { panel('#filters', false); $('#open-filters').setAttribute('aria-expanded', 'false'); }
+  function closeEvent() { panel('#event', false); if (lastFocus) lastFocus.focus(); }
+  $('#open-filters').addEventListener('click', function () {
+    var open = !$('#filters').classList.contains('is-open');
+    if (open) panel('#event', false);
+    panel('#filters', open);
+    this.setAttribute('aria-expanded', String(open));
+  });
+  document.querySelectorAll('.panel [data-close]').forEach(function (b) {
+    b.addEventListener('click', function () { if (b.closest('#event')) closeEvent(); else closeFilters(); });
+  });
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if ($('#event').classList.contains('is-open') && !$('#event').contains(t) && !t.closest('.ev')) closeEvent();
+    if ($('#filters').classList.contains('is-open') && !$('#filters').contains(t) && !t.closest('#open-filters')) closeFilters();
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape') return;
+    if ($('#event').classList.contains('is-open')) closeEvent();
+    if ($('#filters').classList.contains('is-open')) closeFilters();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

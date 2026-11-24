@@ -118,10 +118,10 @@ body.is-docked .hdr__logo { opacity: 1; transform: none; pointer-events: auto; }
   transform: translateY(calc(var(--lift, 0) * -40px)); opacity: calc(1 - var(--lift, 0) * .6);
 }
 .hero__title { margin: 0; grid-column: 1; grid-row: 1; align-self: start; }
-.hero__by { grid-column: 1; grid-row: 2; align-self: end; display: flex; flex-direction: column; gap: 8px; width: max-content; text-decoration: none; color: var(--hero-ink); }
-.hero__by span { font-size: 13px; letter-spacing: .02em; opacity: .8; }
-.hero__by img { display: block; width: 260px; height: auto; transition: opacity .2s; }
-.hero__by:hover img { opacity: .85; }
+.hero__by { grid-column: 1; grid-row: 2; align-self: end; display: flex; flex-direction: column; gap: 8px; width: max-content; text-decoration: none; color: var(--hero-ink); opacity: .6; transition: opacity .2s; }
+.hero__by span { font-size: 13px; letter-spacing: .02em; }
+.hero__by img { display: block; width: 260px; height: auto; }
+.hero__by:hover, .hero__by:focus-visible { opacity: 1; }
 .hero__title img { display: block; width: min(640px, 100%); height: auto; }
 .hero__lede { grid-column: 2; grid-row: 1 / span 2; align-self: end; justify-self: end; margin: 0; max-width: 30em; font-size: clamp(17px, 1.45vw, 21px); line-height: 1.35; font-weight: 500; }
 .hero__lede a { font-size: .82em; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; text-underline-offset: 3px; white-space: nowrap; transition: color .15s; }

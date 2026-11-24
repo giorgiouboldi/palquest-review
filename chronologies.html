@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronologies | Interactive Encyclopedia of the Palestine Question</title>
+<style>
+@font-face { font-family: "Lyon Text"; src: url("assets/fonts/LyonArabicText-Regular-Web.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Suisse Intl"; src: url("assets/fonts/SuisseIntl-Book.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+:root {
+  color-scheme: light;
+  --paper: #ffffff;
+  --ink: #0f2a20;
+  --muted: #5d6c65;
+  --rule: #dfe5e1;
+  --accent: #2f8664;
+  --accent-soft: #e6f2ec;
+  --dark: #06281e;
+  --f-display: "Lyon Text", Georgia, "Times New Roman", serif;
+  --f-text: "Suisse Intl", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --hdr: 60px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --container: 1320px;
+  --inset: 12px;
+  --edge: calc(max(16px, (100% - var(--container)) / 2) + var(--inset));
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { font-synthesis: none; background: var(--paper); color: var(--ink); font-family: var(--f-text); font-size: 15px; line-height: 1.5; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+/* ---------- Header (always docked on this page) ---------- */
+.hdr { position: sticky; top: 0; z-index: 30; height: var(--hdr); background: var(--paper); box-shadow: 0 1px 0 var(--rule); }
+.hdr__inner { height: 100%; display: flex; align-items: center; gap: 12px; padding: 0 var(--edge); }
+.hdr__logo { line-height: 0; }
+.hdr__logo img { height: 44px; width: auto; }
+.hdr__spacer { flex: 1; }
+.hdr__btn { background: none; border: 0; color: inherit; font: inherit; font-size: 15px; font-weight: 600; height: 38px; padding: 0 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border-radius: 19px; white-space: nowrap; transition: background .15s; }
+.hdr__btn:hover { background: var(--accent-soft); }
+.hdr__btn svg { width: 22px; height: 22px; }
+.hdr__btn:last-child { margin-inline-end: -10px; }
+
+/* ---------- Intro ---------- */
+.intro { padding: 40px var(--edge) 64px; display: grid; grid-template-columns: 5fr 7fr; column-gap: 24px; align-items: start; border-bottom: 1px solid var(--rule); }
+.intro h1 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(40px, 3.8vw, 56px); line-height: 1; letter-spacing: -.01em; }
+.intro p { margin: 0; font-size: 14px; line-height: 1.4; justify-self: start; }
+
+/* ---------- Choice cards ---------- */
+.choices { padding: 40px var(--edge) 72px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.card { display: flex; flex-direction: column; text-decoration: none; border-radius: 6px; padding: 12px; margin: -12px; transition: background .25s var(--ease); }
+.card:hover, .card:focus-visible { background: var(--accent-soft); }
+
+.card__media { position: relative; display: grid; gap: 4px; overflow: hidden; border-radius: 3px; aspect-ratio: 3 / 2; }
+.card__media--mosaic { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.card__media--mosaic .ph:first-child { grid-row: 1 / span 2; }
+.card__media--grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); }
+.card__media--grid .ph:nth-child(n+9) { display: none; }
+.ph { position: relative; overflow: hidden; margin: 0; min-height: 0; background: var(--dark); }
+.ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease), filter .6s var(--ease); }
+.card:hover .ph img, .card:focus-visible .ph img { transform: scale(1.05); filter: brightness(1.08); }
+.ph__cap { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 22px 10px 8px; background: linear-gradient(to top, rgba(6,40,30,.9), rgba(6,40,30,0)); color: #fff; font-size: 13px; line-height: 1.25; }
+.ph__cap small { display: block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .8; margin-bottom: 2px; }
+
+.card__body { padding-top: 22px; display: grid; gap: 14px; }
+.card__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.card h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(32px, 3vw, 44px); line-height: 1.05; transition: color .2s; }
+.card h2 span { background-image: linear-gradient(var(--accent), var(--accent)); background-size: 0 1px; background-repeat: no-repeat; background-position: 0 100%; transition: background-size .3s var(--ease), color .2s; padding-bottom: 2px; }
+.card:hover h2, .card:focus-visible h2 { color: var(--accent); }
+.card:hover h2 span, .card:focus-visible h2 span { background-size: 100% 1px; }
+.card__go { display: inline-block; margin-top: 10px; font-size: 14px; font-weight: 600; color: var(--accent); }
+.card p { margin: 0; max-width: 40em; }
+
+
+/* ---------- Placeholder notice (prototype only) ---------- */
+.note { margin: 0; padding: 0 var(--edge) 40px; font-size: 13px; color: var(--muted); }
+
+
+/* Two columns with a vertical divider (final layout) */
+.choices { position: relative; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 64px; }
+.choices::before { content: ""; position: absolute; top: 40px; bottom: 72px; left: 50%; width: 1px; background: var(--rule); }
+.card { flex-direction: column; gap: 0; margin: 0; padding: 0; }
+.card__media { flex: none; height: auto; aspect-ratio: 16 / 9; }
+.card__body { padding: 22px 20px 24px; gap: 4px; }
+.card__head { display: flex; }
+
+/* Section counts, styled like the years on the live thematic page (Suisse Intl 16px, 20px line height, warm grey) */
+.card__count { margin: 0; font-size: 16px; line-height: 20px; color: #a8a39f; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 960px) {
+  :root { --hdr: 56px; }
+  .hdr__logo img { content: url("assets/web/logo-mobile-dark.png"); height: 30px; }
+  .intro { grid-template-columns: 1fr; row-gap: 24px; padding-top: 36px; }
+  .card__media { aspect-ratio: 3 / 2; }
+  .card__body { padding-top: 22px; }
+  .choices { grid-template-columns: 1fr; gap: 40px; }
+  .choices::before { display: none; }
+  .card__body { padding-inline: 0; }
+  .card__body { padding: 22px 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .card:hover .ph img, .card:focus-visible .ph img { transform: none; filter: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr__inner">
+    <a class="hdr__logo" href="#top" aria-label="Interactive Encyclopedia of the Palestine Question, home"><img src="assets/web/logo-2l-dark.svg" alt=""></a>
+    <div class="hdr__spacer"></div>
+    <button class="hdr__btn" type="button" aria-haspopup="true" aria-expanded="false">English <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:12px;height:12px"><path d="M5 8h14l-7 8z"/></svg></button>
+    <button class="hdr__btn" type="button" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="intro" aria-labelledby="chr-title">
+    <h1 id="chr-title">Chronologies</h1>
+    <p>The backbone of our encyclopedia: a detailed chronology of the major events that have shaped Palestinian history in the areas of war, diplomacy, culture, economics, and many other topics. Some of these events are part of “thematic timelines,” giving you one-click access to milestones in the history of the Palestine Liberation Organization, key United Nations resolutions, the various phases of the Arab-Israeli wars and rounds of negotiations, and many other pivotal developments in Palestinian history.</p>
+  </section>
+
+  <div class="choices">
+
+    <!-- Card 1: Overall Chronology -->
+    <a class="card" href="chronologies-overall.html">
+      <div class="card__media" aria-hidden="true">
+        <figure class="ph"><img src="assets/web/overall-chronology.jpg" alt=""></figure>
+      </div>
+      <div class="card__body">
+        <div class="card__head">
+          <h2><span>Overall Chronology</span></h2>
+        </div>
+        <div class="card__count">13 periods</div>
+        <p>A detailed chronology of the main events that shaped Palestinian history in the realms of war, diplomacy, culture, economy, and many other topics.</p>
+        <span class="card__go">Explore section →</span>
+      </div>
+    </a>
+
+    <!-- Card 2: Thematic Chronologies -->
+    <a class="card" href="chronologies-thematic.html">
+      <div class="card__media" aria-hidden="true">
+        <figure class="ph"><img src="assets/web/thematic-chronology.jpg" alt=""></figure>
+      </div>
+      <div class="card__body">
+        <div class="card__head">
+          <h2><span>Thematic Chronologies</span></h2>
+        </div>
+        <div class="card__count">39 themes</div>
+        <p>Milestones of the PLO’s history, the main United Nations resolutions, the different stages of Arab-Israeli wars and negotiations rounds, and many other crucial developments.</p>
+        <span class="card__go">Explore section →</span>
+      </div>
+    </a>
+
+  </div>
+
+</main>
+
+</body>
+</html>

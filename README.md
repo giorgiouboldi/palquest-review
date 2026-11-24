@@ -47,3 +47,25 @@ Prototype: [home.html](home.html)
 - Everything works with the keyboard: Escape closes the panel and menus, and focus returns to where you were.
 - Every image has a text description, and the banner logo is the page's main heading.
 - Animations are reduced, and the banner photos stop changing, for visitors who turn motion down in their system settings.
+
+## Chronologies hub (desktop and mobile)
+
+Prototype: [chronologies.html](chronologies.html)
+
+**Content**
+- The "The requested page could not be found" line under the intro is removed. The page title on /chronologies also reads "Page not found", so the route needs checking.
+- The intro matches the live site: title on the left, the paragraph on the right, with a thin rule underneath.
+- Each section shows its count between the title and the description: 13 periods (Overall Chronology) and 39 themes (Thematic Chronologies). The count is styled like the years on the live thematic page.
+
+**Layout**
+- The two sections sit side by side, each with an image above its title.
+- A thin vertical line divides the two blocks, with space on both sides.
+- "Explore section →" sits under the description.
+- New pictures were created from the images used in the periods and thematic chronologies.
+
+**Hover and click**
+- The whole card is clickable, with a hover effect similar to the home page: a light green background, the title turns green with an underline, and the image zooms in slightly.
+
+**Mobile**
+- The two blocks stack, with the image above the text, and the divider is hidden.
+- The compact logo is used in the header.

@@ -239,35 +239,20 @@ button, input, select { font: inherit; color: inherit; }
 .filters__act { flex-shrink: 0; margin: 0 -28px; padding: 20px 28px 24px; display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--rule); background: var(--paper); }
 .filters__act .btn { min-width: 200px; }
 
-/* Timeline view */
-.tl { display: grid; grid-template-columns: 300px minmax(0, 1fr); align-items: stretch; border-top: 1px solid var(--rule); }
-.tl:last-child { border-bottom: 1px solid var(--rule); }
-.tl__lead { display: grid; grid-template-columns: 40px 96px minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px 12px 10px 0; }
-.tl__thumb img { width: 40px; height: 40px; object-fit: cover; display: block; border-radius: 2px; }
-.tl__y { font-size: 13px; color: var(--grey); white-space: nowrap; }
-.tl__name { display: block; font-size: 14px; line-height: 1.3; }
-.tl__cat { display: block; font-size: 12px; color: var(--grey); margin-top: 2px; }
-.tl__track { position: relative; min-height: 56px; }
-.tl__track i { position: absolute; top: 0; bottom: 0; background: var(--hl); transition: background-color .3s var(--ease); }
-.tl:hover .tl__track i { background: #3d9a78; }
-.tl:hover .tl__name { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
-.tl { cursor: pointer; }
 
-/* Toolbar dropdown */
-.dd { height: 32px; padding: 0 28px 0 12px; border: 0; border-radius: 6px; background: var(--ink); color: #fff; font: inherit; font-size: 14px; cursor: pointer; }
 /* Timeline: bars across the full width, behind the title */
-.tl { position: relative; min-height: 48px; border-top: 1px solid var(--rule); }
+.tl { position: relative; min-height: 40px; border-top: 1px solid var(--rule); }
 .tl:last-child { border-bottom: 1px solid var(--rule); }
-.tl__track { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.tl__track { position: absolute; left: 0; right: 0; top: 2px; bottom: 2px; }
 .tl__track i { position: absolute; top: 0; bottom: 0; background: var(--hl); transition: background-color .3s var(--ease); }
-.tl__lead { position: relative; z-index: 1; display: grid; grid-template-columns: 40px 96px minmax(0, 360px); gap: 12px; align-items: center; padding: 6px 0; pointer-events: none; }
-.tl__thumb img { width: 40px; height: 40px; object-fit: cover; display: block; }
-.tl__y { font-size: 13px; color: var(--grey); white-space: nowrap; }
-.tl__name { display: block; font-size: 14px; line-height: 1.3; }
-.tl__cat { display: block; font-size: 12px; color: var(--grey); margin-top: 2px; }
+.tl__lead { position: relative; z-index: 1; display: grid; grid-template-columns: 28px 84px minmax(0, 420px); gap: 8px; align-items: center; padding: 6px 0; pointer-events: none; }
+.tl__thumb img { width: 28px; height: 28px; object-fit: cover; display: block; }
+.tl__y { font-size: 12px; line-height: 16px; color: var(--grey); white-space: nowrap; }
+.tl__name { display: block; font-size: 13px; line-height: 16px; white-space: normal; }
+.tl__cat { display: block; font-size: 11px; line-height: 14px; color: var(--grey); white-space: normal; }
 .tl:hover .tl__track i { background: #3d9a78; }
 /* Grid */
-.gwrap { display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: 48px; align-items: start; }
+.gwrap { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: 40px; align-items: start; }
 .gcats { list-style: none; margin: 0; padding: 0; position: sticky; top: 160px; }
 .gcats li + li { margin-top: 12px; }
 .gcat { all: unset; cursor: pointer; font-size: 12px; line-height: 1.3; color: var(--grey); transition: color .2s var(--ease); }
@@ -281,6 +266,90 @@ button, input, select { font: inherit; color: inherit; }
 .gcard:hover .gcard__t { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
 .gcard:hover img { opacity: .85; }
 @media (max-width: 960px) { .gwrap { grid-template-columns: 1fr; } .ggrid { grid-template-columns: 1fr; } .gcats { position: static; } }
+
+/* Timeline rows: years on hover, + to open the details, as in the periods */
+.tl__head { position: relative; min-height: 40px; }
+.tl__head .tl__track { position: absolute; left: 0; right: 0; top: 2px; bottom: 2px; }
+.tl__y { opacity: 0; transition: opacity .3s var(--ease); }
+.tl:hover .tl__y, .tl__head:focus-within .tl__y, .tl[data-open="true"] .tl__y { opacity: 1; }
+.tl__plus { position: absolute; right: 0; top: 50%; z-index: 2; width: 24px; height: 24px; margin-top: -12px; padding: 0; border: 0; background: none; font-size: 22px; line-height: 24px; color: var(--ink); cursor: pointer; transition: transform .35s var(--ease); pointer-events: auto; }
+.tl[data-open="true"] .tl__plus { transform: rotate(45deg); }
+.tl__lead { pointer-events: none; padding-right: 40px; }
+.tl__body { padding: 16px 0 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+.tl__body[hidden] { display: none; }
+.tl__text p { margin: 0 0 16px; font-size: 16px; line-height: 20px; }
+.tl__body .per__fig { margin: 0; }
+.tl__body .per__fig .frame { overflow: hidden; border-radius: 2px; aspect-ratio: 506 / 294; background: var(--soft); }
+.tl__body .per__fig img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tl__body .per__fig figcaption { font-size: 12px; line-height: 16px; margin-top: 8px; }
+.tl__body .per__fig figcaption .src { color: var(--grey); display: block; }
+
+/* Timeline rows: links, with a thin bar at the bottom of each row, as in the periods */
+a.tl { display: block; color: inherit; text-decoration: none; }
+.tl__head { display: block; position: relative; min-height: 40px; }
+.tl__head .tl__track { top: auto; bottom: 0; height: 6px; }
+.tl__track i { top: 0; bottom: 0; }
+.tl__lead { padding-right: 0; }
+.tl:hover .tl__name { color: var(--hl); text-decoration: underline; text-underline-offset: 3px; }
+.tl:hover .tl__track i { background: #3d9a78; }
+
+/* Timeline: years always visible, larger titles */
+.tl__y { opacity: 1; }
+.tl__name { font-size: 16px; line-height: 20px; }
+.tl__cat { font-size: 12px; line-height: 16px; }
+.tl__head { min-height: 48px; }
+.tl__lead { grid-template-columns: 28px 96px minmax(0, 420px); }
+
+/* Thematic: bigger texts, dates aligned with the top of the titles */
+.tl__lead { align-items: start; padding-top: 8px; padding-bottom: 8px; }
+.tl__y { font-size: 14px; line-height: 22px; }
+.tl__name { font-size: 18px; line-height: 22px; }
+.tl__cat { font-size: 14px; line-height: 18px; margin-top: 2px; }
+.tl__thumb img { width: 32px; height: 32px; }
+.tl__lead { grid-template-columns: 32px 100px minmax(0, 480px); }
+.tl__head { min-height: 56px; }
+.gcat { font-size: 14px; }
+.gcard__t { font-size: 24px; }
+.gcard__y { font-size: 15px; }
+
+/* Titles run to the right edge of the row before wrapping */
+.tl__lead { grid-template-columns: 32px 100px minmax(0, 1fr); }
+
+/* Thematic images: fit inside their frame instead of filling it; timeline thumbnails as tall as the title and category */
+.gcard img { object-fit: contain; }
+.tl__lead { grid-template-columns: auto 100px minmax(0, 1fr); }
+.tl__thumb img { width: auto; height: 42px; max-width: 64px; object-fit: contain; }
+
+/* Timeline thumbnails: square, filled, as tall as the title and category */
+.tl__lead { grid-template-columns: 42px 100px minmax(0, 1fr); }
+.tl__thumb img { width: 42px; height: 42px; max-width: none; object-fit: cover; }
+
+/* Grid cards as in the live grid: wide filled pictures, larger title and years */
+.gcard { grid-template-columns: minmax(0, 1fr) 224px; gap: 16px; padding: 18px 0; }
+.gcard img { width: 224px; height: 156px; object-fit: cover; }
+.gcard__t { font-size: 24px; line-height: 27px; }
+.gcard__y { font-size: 15px; line-height: 18px; margin-top: 8px; }
+
+/* Grid images: 224 by 216, filled, as on the live site */
+.gcard { grid-template-columns: minmax(0, 1fr) 224px; }
+.gcard img { width: 224px; height: 216px; object-fit: cover; }
+
+/* Grid images as on the live site: 224 wide, natural proportions, capped at 216 high */
+.gcard img { width: 224px; height: auto; max-height: 216px; object-fit: cover; }
+.axis[hidden] { display: none; }
+
+/* Grid: wider category column with more space before the cards */
+.gwrap { grid-template-columns: 200px minmax(0, 1fr); column-gap: 56px; }
+.gcats { padding-right: 16px; }
+
+/* Category list starts level with the first card title */
+.gcats { padding-top: 18px; }
+
+/* Selected category gets a dash, as on the live site */
+.gcat.is-on::before { content: "– "; }
+
+/* No filter button on the thematic page */
+#open-filters { display: none; }
 </style>
 </head>
 <body>
@@ -304,7 +373,7 @@ button, input, select { font: inherit; color: inherit; }
     <input class="search" type="search" placeholder="Search events..." aria-label="Search events">
     <div class="bar__group">
       <span class="lbl" id="group-lbl">Display as</span>
-      <select class="dd" id="display-as" aria-labelledby="group-lbl"><option value="timeline">Timeline</option><option value="grid">Grid</option></select>
+      <div class="seg" role="group" aria-labelledby="group-lbl"><button class="seg__btn" type="button" data-mode="timeline" aria-pressed="true">Timeline</button><button class="seg__btn" type="button" data-mode="grid" aria-pressed="false">Grid</button></div>
     </div>
     <div class="bar__right">
       <button class="btn" id="open-filters" type="button" aria-controls="filters" aria-expanded="false">Open filters</button>
@@ -359,8 +428,8 @@ button, input, select { font: inherit; color: inherit; }
   var PLACE = 'Placeholder text for this event. The final description, actors and related items come from the chronology data.';
 
 
-  var themes = [{"years":"1858 - present","name":"Regulating Palestinian Land","cat":"Colonialism and Resistance","from":1858,"to":2023},{"years":"1897 - present","name":"World Zionist Organization Congresses","cat":"Colonialism and Resistance","from":1897,"to":2023},{"years":"1915-1954","name":"Transjordan and its Evolving Connection to Palestine","cat":"Regional and International Politics and Diplomacy","from":1915,"to":1954},{"years":"1917 - present","name":"Palestinian Political Institutional Presence in the US","cat":"Regional and International Politics and Diplomacy","from":1917,"to":2023},{"years":"1918 - 1934","name":"Palestinian National Congresses","cat":"Politics and Political Movements","from":1918,"to":1934},{"years":"1919 - 1946","name":"British and International Commissions of Inquiry in Mandate Palestine","cat":"Regional and International Politics and Diplomacy","from":1919,"to":1946},{"years":"1920 - 1945","name":"Criminal Law in Mandate Palestine","cat":"Subjugation, Violence and Wars","from":1920,"to":1945},{"years":"1923 - present","name":"Lebanon’s Relation to Palestine and the Palestinians","cat":"Regional and International Politics and Diplomacy","from":1923,"to":2023},{"years":"1944 - 1947","name":"Zionist Operations Against the British Mandate Authorities","cat":"Subjugation, Violence and Wars","from":1944,"to":1947},{"years":"1946 - 1949","name":"Military Operations and Zionist Ethnic Cleansing","cat":"Subjugation, Violence and Wars","from":1946,"to":1949},{"years":"1946 - present","name":"Arab Summits and Palestine","cat":"Regional and International Politics and Diplomacy","from":1946,"to":2023},{"years":"1947 - present","name":"The UN and Palestine: General Assembly Resolutions","cat":"Regional and International Politics and Diplomacy","from":1947,"to":2023},{"years":"1947 - present","name":"Israel's Policy Towards Jerusalem","cat":"Colonialism and Resistance","from":1947,"to":2023},{"years":"1948 - present","name":"Israeli Laws Targeting Palestinians","cat":"Colonialism and Resistance","from":1948,"to":2023},{"years":"1948 - present","name":"The UN and Palestine: Security Council Resolutions","cat":"Regional and International Politics and Diplomacy","from":1948,"to":2023},{"years":"1955 - 1957","name":"1956 War","cat":"Subjugation, Violence and Wars","from":1955,"to":1957},{"years":"1958 - present","name":"Palestinian Representation in the Knesset","cat":"Colonialism and Resistance","from":1958,"to":2023},{"years":"1963 - present","name":"The UN and Palestine: Security Council Vetoed Draft Resolutions","cat":"Regional and International Politics and Diplomacy","from":1963,"to":2023},{"years":"1964 - present","name":"Palestine Liberation Organization: National Council Sessions","cat":"Politics and Political Movements","from":1964,"to":2023},{"years":"1966 - 1967","name":"June 1967 War","cat":"Subjugation, Violence and Wars","from":1966,"to":1967},{"years":"1970 - present","name":"Israeli Assassination Campaign Beyond Palestine Borders","cat":"Subjugation, Violence and Wars","from":1970,"to":2023},{"years":"1973 - 1974","name":"October 1973 War","cat":"Subjugation, Violence and Wars","from":1973,"to":1974},{"years":"1977 - 1982","name":"Egyptian-Israeli Negotiation Rounds on Palestinian Autonomy","cat":"Regional and International Politics and Diplomacy","from":1977,"to":1982},{"years":"1982 - 1983","name":"Lebanon War, 1982","cat":"Subjugation, Violence and Wars","from":1982,"to":1983},{"years":"1991 - 1999","name":"Palestinian-Israeli Interim Negotiation Rounds","cat":"Regional and International Politics and Diplomacy","from":1991,"to":1999},{"years":"1996 - 2004","name":"Israeli Assassination Campaign Within Palestine Borders (I)","cat":"Subjugation, Violence and Wars","from":1996,"to":2004},{"years":"1996 - present","name":"Elections Under the Palestinian Authority","cat":"Politics and Political Movements","from":1996,"to":2023},{"years":"1999 - 2001","name":"Palestinian-Israeli Final Status Negotiation Rounds","cat":"Regional and International Politics and Diplomacy","from":1999,"to":2001},{"years":"2003 - 2006","name":"Israel’s Gaza Redeployment, 2005","cat":"Colonialism and Resistance","from":2003,"to":2006},{"years":"2005 - present","name":"Hamas-Fatah Reconciliation Attempts","cat":"Politics and Political Movements","from":2005,"to":2023},{"years":"2005-present","name":"Israeli Assassination Campaign Within Palestine Borders (II)","cat":"Subjugation, Violence and Wars","from":2005,"to":2023},{"years":"2006 - 2008","name":"Lebanon War, 2006","cat":"Subjugation, Violence and Wars","from":2006,"to":2008},{"years":"2007 - 2008","name":"The Annapolis Negotiation Rounds","cat":"Regional and International Politics and Diplomacy","from":2007,"to":2008},{"years":"2008 - 2009","name":"The War on Gaza, 2008-2009","cat":"Subjugation, Violence and Wars","from":2008,"to":2009},{"years":"2009 - 2010","name":"Mitchell-Mediated Negotiations and the Settlement Threat","cat":"Regional and International Politics and Diplomacy","from":2009,"to":2010},{"years":"2012","name":"Israel's 2012 Assault on Gaza","cat":"Subjugation, Violence and Wars","from":2012,"to":2012},{"years":"2013 - 2014","name":"Kerry-Sponsored Palestinian-Israeli Negotiations","cat":"Regional and International Politics and Diplomacy","from":2013,"to":2014},{"years":"2014-2015","name":"The 2014 Gaza War","cat":"Subjugation, Violence and Wars","from":2014,"to":2015},{"years":"2021","name":"The May 2021 Gaza War","cat":"Subjugation, Violence and Wars","from":2021,"to":2021}];
-  var periods = themes.map(function (t) { return { name: t.name, from: t.from, to: t.to, img: PLACEHOLDER_IMG, cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this theme. The final description comes from the thematic chronology data.' }; });
+  var themes = [{"years":"1858 - present","name":"Regulating Palestinian Land","cat":"Colonialism and Resistance","from":1858,"to":2023,"img":"assets/thematic/09792u_2000_x_1338.jpg"},{"years":"1897 - present","name":"World Zionist Organization Congresses","cat":"Colonialism and Resistance","from":1897,"to":2023,"img":"assets/thematic/11342300003_3fa104720d_o.jpg"},{"years":"1915-1954","name":"Transjordan and its Evolving Connection to Palestine","cat":"Regional and International Politics and Diplomacy","from":1915,"to":1954,"img":"assets/thematic/147667.jpg"},{"years":"1917 - present","name":"Palestinian Political Institutional Presence in the US","cat":"Regional and International Politics and Diplomacy","from":1917,"to":2023,"img":"assets/thematic/15245923092_c0504ff79e_o_2448_x_1836.jpg"},{"years":"1918 - 1934","name":"Palestinian National Congresses","cat":"Politics and Political Movements","from":1918,"to":1934,"img":"assets/thematic/18699u-ConvertImage.jpg"},{"years":"1919 - 1946","name":"British and International Commissions of Inquiry in Mandate Palestine","cat":"Regional and International Politics and Diplomacy","from":1919,"to":1946,"img":"assets/thematic/199460.jpg"},{"years":"1920 - 1945","name":"Criminal Law in Mandate Palestine","cat":"Subjugation, Violence and Wars","from":1920,"to":1945,"img":"assets/thematic/2AA0RJ4_0.jpg"},{"years":"1923 - present","name":"Lebanon’s Relation to Palestine and the Palestinians","cat":"Regional and International Politics and Diplomacy","from":1923,"to":2023,"img":"assets/thematic/2D2B4FK_0.jpg"},{"years":"1944 - 1947","name":"Zionist Operations Against the British Mandate Authorities","cat":"Subjugation, Violence and Wars","from":1944,"to":1947,"img":"assets/thematic/2DX6J2N_0.jpg"},{"years":"1946 - 1949","name":"Military Operations and Zionist Ethnic Cleansing","cat":"Subjugation, Violence and Wars","from":1946,"to":1949,"img":"assets/thematic/3194424982_97bb7be141_o.jpg"},{"years":"1946 - present","name":"Arab Summits and Palestine","cat":"Regional and International Politics and Diplomacy","from":1946,"to":2023,"img":"assets/thematic/34345_ca_object_representations_media_64757_original.jpg"},{"years":"1947 - present","name":"The UN and Palestine: General Assembly Resolutions","cat":"Regional and International Politics and Diplomacy","from":1947,"to":2023,"img":"assets/thematic/375581691_dc34d3243e_o.jpg"},{"years":"1947 - present","name":"Israel's Policy Towards Jerusalem","cat":"Colonialism and Resistance","from":1947,"to":2023,"img":"assets/thematic/3997819387_b64c9ac5c7_h.jpg"},{"years":"1948 - present","name":"Israeli Laws Targeting Palestinians","cat":"Colonialism and Resistance","from":1948,"to":2023,"img":"assets/thematic/4990866222_6eb782dc21_k.jpg"},{"years":"1948 - present","name":"The UN and Palestine: Security Council Resolutions","cat":"Regional and International Politics and Diplomacy","from":1948,"to":2023,"img":"assets/thematic/65595_ca_object_representations_media_55678_original_2666_x_.jpg"},{"years":"1955 - 1957","name":"1956 War","cat":"Subjugation, Violence and Wars","from":1955,"to":1957,"img":"assets/thematic/73638_ca_object_representations_media_59214_original_1600_x_.jpg"},{"years":"1958 - present","name":"Palestinian Representation in the Knesset","cat":"Colonialism and Resistance","from":1958,"to":2023,"img":"assets/thematic/8248606035_e65036ea48_o.jpg"},{"years":"1963 - present","name":"The UN and Palestine: Security Council Vetoed Draft Resolutions","cat":"Regional and International Politics and Diplomacy","from":1963,"to":2023,"img":"assets/thematic/9601001A.jpg"},{"years":"1964 - present","name":"Palestine Liberation Organization: National Council Sessions","cat":"Politics and Political Movements","from":1964,"to":2023,"img":"assets/thematic/98320_ca_object_representations_media_73538_original_3008_x_.jpg"},{"years":"1966 - 1967","name":"June 1967 War","cat":"Subjugation, Violence and Wars","from":1966,"to":1967,"img":"assets/thematic/E-31975.jpg"},{"years":"1970 - present","name":"Israeli Assassination Campaign Beyond Palestine Borders","cat":"Subjugation, Violence and Wars","from":1970,"to":2023,"img":"assets/thematic/Egyptian_Army_Leaders_in_6th_Oct_1973_War.jpg"},{"years":"1973 - 1974","name":"October 1973 War","cat":"Subjugation, Violence and Wars","from":1973,"to":1974,"img":"assets/thematic/GettyImages-455463843_1.jpg"},{"years":"1977 - 1982","name":"Egyptian-Israeli Negotiation Rounds on Palestinian Autonomy","cat":"Regional and International Politics and Diplomacy","from":1977,"to":1982,"img":"assets/thematic/Hamas-Fatah_Rally.jpg"},{"years":"1982 - 1983","name":"Lebanon War, 1982","cat":"Subjugation, Violence and Wars","from":1982,"to":1983,"img":"assets/thematic/M33-9229.jpg"},{"years":"1991 - 1999","name":"Palestinian-Israeli Interim Negotiation Rounds","cat":"Regional and International Politics and Diplomacy","from":1991,"to":1999,"img":"assets/thematic/ME8HXR.jpg"},{"years":"1996 - 2004","name":"Israeli Assassination Campaign Within Palestine Borders (I)","cat":"Subjugation, Violence and Wars","from":1996,"to":2004,"img":"assets/thematic/Olmert_Bush_Habbas_in_Annapolis_Conference_1600_x_1143.jpg"},{"years":"1996 - present","name":"Elections Under the Palestinian Authority","cat":"Politics and Political Movements","from":1996,"to":2023,"img":"assets/thematic/PC_81-77.jpg"},{"years":"1999 - 2001","name":"Palestinian-Israeli Final Status Negotiation Rounds","cat":"Regional and International Politics and Diplomacy","from":1999,"to":2001,"img":"assets/thematic/PC_82-55.jpg"},{"years":"2003 - 2006","name":"Israel’s Gaza Redeployment, 2005","cat":"Colonialism and Resistance","from":2003,"to":2006,"img":"assets/thematic/R-309_0.jpg"},{"years":"2005 - present","name":"Hamas-Fatah Reconciliation Attempts","cat":"Politics and Political Movements","from":2005,"to":2023,"img":"assets/thematic/Sea_Hawk_armed_on_HMS_Eagle_R05_Suez_1956.jpg"},{"years":"2005-present","name":"Israeli Assassination Campaign Within Palestine Borders (II)","cat":"Subjugation, Violence and Wars","from":2005,"to":2023,"img":"assets/thematic/TXPGNE_1.jpg"},{"years":"2006 - 2008","name":"Lebanon War, 2006","cat":"Subjugation, Violence and Wars","from":2006,"to":2008,"img":"assets/thematic/UN_General_Assembly_hall.jpg"},{"years":"2007 - 2008","name":"The Annapolis Negotiation Rounds","cat":"Regional and International Politics and Diplomacy","from":2007,"to":2008,"img":"assets/thematic/main_image21031_HfPh70LHLl.jpg"},{"years":"2008 - 2009","name":"The War on Gaza, 2008-2009","cat":"Subjugation, Violence and Wars","from":2008,"to":2009,"img":"assets/thematic/main_image46871_K8Zo36zWEg.jpg"},{"years":"2009 - 2010","name":"Mitchell-Mediated Negotiations and the Settlement Threat","cat":"Regional and International Politics and Diplomacy","from":2009,"to":2010,"img":"assets/thematic/s-l1600.jpg"},{"years":"2012","name":"Israel's 2012 Assault on Gaza","cat":"Subjugation, Violence and Wars","from":2012,"to":2012,"img":"assets/thematic/thumbnail_UNRWA-250.jpg"},{"years":"2013 - 2014","name":"Kerry-Sponsored Palestinian-Israeli Negotiations","cat":"Regional and International Politics and Diplomacy","from":2013,"to":2014,"img":"assets/thematic/zionist congress.jpg"},{"years":"2014-2015","name":"The 2014 Gaza War","cat":"Subjugation, Violence and Wars","from":2014,"to":2015,"img":"assets/thematic/09792u_2000_x_1338.jpg"},{"years":"2021","name":"The May 2021 Gaza War","cat":"Subjugation, Violence and Wars","from":2021,"to":2021,"img":"assets/thematic/11342300003_3fa104720d_o.jpg"}];
+  var periods = themes.map(function (t) { return { name: t.name, from: t.from, to: t.to, img: t.img, cap: 'Title. Caption. Location (YYYY).', src: 'Source name. Author name', desc: 'Placeholder text for this theme. The final description comes from the thematic chronology data.' }; });
 
   var filterGroups = [
     { title: 'Subject', items: [['Biographical', 278], ['Colonization', 191], ['Contextual', 36], ['Cultural', 22], ['Diplomatic', 858], ['Institutional', 447], ['Legal', 289], ['Policy-Program', 523], ['Popular action', 240], ['Sanctions', 238], ['Social-Economic', 121], ['Violence', 829]] },
@@ -408,13 +477,14 @@ button, input, select { font: inherit; color: inherit; }
       '<span class="ev__t">' + h(e.title) + '</span>' + thumb + '</button>';
   }
   function render() {
+    document.getElementById('axis').hidden = (mode === 'grid');
     var list = $('#list');
     if (mode === 'timeline') {
       list.innerHTML = themes.map(function (t) {
         var a = pos(t.from), b = pos(t.to);
-        return '<div class="tl"><div class="tl__track"><i style="left:' + (a * 100).toFixed(3) + '%;width:' + (Math.max(0.004, b - a) * 100).toFixed(3) + '%"></i></div>' +
-          '<div class="tl__lead"><span class="tl__thumb"><img src="' + PLACEHOLDER_IMG + '" alt=""></span>' +
-          '<span class="tl__y">' + h(t.years) + '</span><span class="tl__txt"><span class="tl__name">' + h(t.name) + '</span><span class="tl__cat">' + h(t.cat) + '</span></span></div></div>';
+        return '<a class="tl" href="#"><span class="tl__head"><span class="tl__track"><i style="left:' + (a * 100).toFixed(3) + '%;width:' + (Math.max(0.004, b - a) * 100).toFixed(3) + '%"></i></span>' +
+          '<span class="tl__lead"><span class="tl__thumb"><img src="' + t.img + '" alt=""></span>' +
+          '<span class="tl__y">' + h(t.years) + '</span><span class="tl__txt"><span class="tl__name">' + h(t.name) + '</span><span class="tl__cat">' + h(t.cat) + '</span></span></span></span></a>';
       }).join('');
       return;
     }
@@ -474,7 +544,7 @@ button, input, select { font: inherit; color: inherit; }
     }).join('') + '<li><button class="gcat' + (gridCat ? '' : ' is-on') + '" type="button" data-cat="">All</button></li></ul>';
     var cards = themes.filter(function (t) { return !gridCat || t.cat === gridCat; }).map(function (t) {
       return '<a class="gcard" href="#"><span class="gcard__txt"><span class="gcard__t">' + h(t.name) + '</span><span class="gcard__y">' + h(t.years) + '</span></span>' +
-        '<img src="' + PLACEHOLDER_IMG + '" alt=""></a>';
+        '<img src="' + t.img + '" alt=""></a>';
     }).join('');
     return '<div class="gwrap">' + side + '<div class="ggrid">' + cards + '</div></div>';
   }
@@ -484,9 +554,12 @@ button, input, select { font: inherit; color: inherit; }
     gridCat = b.getAttribute('data-cat') || null;
     render();
   });
-  document.getElementById('display-as').addEventListener('change', function (ev) {
-    mode = ev.target.value;
-    render();
+  document.querySelectorAll('.seg__btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      mode = b.getAttribute('data-mode');
+      document.querySelectorAll('.seg__btn').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      render();
+    });
   });
 
   /* ---------- Event panel ---------- */
